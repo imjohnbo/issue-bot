@@ -5,7 +5,7 @@ This GitHub Action will try to find the first open issue with a `radar` label, c
 
 ```
 workflow "My Weekly Radar" {
-  on = "schedule(0,8,*,*,1)"
+  on = "schedule(0 8 * * 1)"
   resolves = ["weekly-radar"]
 }
 
