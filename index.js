@@ -34,10 +34,12 @@ Toolkit.run(async tools => {
   const currentRadar = await tools.github.graphql(getCurrentRadarStr);
   const currentRadarId = currentRadar.resource.issues.nodes[0].number;
   
+  const dateString = today.getFullYear() + '-' + ('0' + (today.getMonth()+1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+  
   // create a new radar
   const newRadar = await tools.github.issues.create({
     ...tools.context.repo,
-    title: `Weekly Radar, week of ${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
+    title: `Weekly Radar, week of ${dateString}`,
     body: updateNewRadarStr(currentRadarId),
     labels: ['radar'],
     assignees: assignees
