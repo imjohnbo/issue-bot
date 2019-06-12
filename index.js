@@ -15,7 +15,9 @@ const updateCurrentRadarStr = (next) => {
   return `Next: #${next}`;
 };
 const updateNewRadarStr = (prev) => {
-  let str = `:wave:
+  let str = `:wave: Hi there!
+
+  :crown: First responder
 
   ### What are you focusing on this week?`;
 
@@ -53,6 +55,13 @@ Toolkit.run(async tools => {
     number: currentRadarId,
     body: updateCurrentRadarStr(newRadarId)
   });
+
+  const oldOriginalComment = await tools.github.issues.get({
+    ...tools.context.repo,
+    issue_number: currentRadarId
+  });
+
+  console.log(oldOriginalComment);
 
   // close out the old
   const closedRadar = await tools.github.issues.update({
