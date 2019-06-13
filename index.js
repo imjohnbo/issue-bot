@@ -32,13 +32,14 @@ Toolkit.run(async tools => {
   const today = new Date();
   const assignees = process.env.ASSIGNEES.split(' ');
 
-  console.log('hello world from top of file')
   
   // grab the current radar
   const currentRadar = await tools.github.graphql(getCurrentRadarStr);
   const currentRadarId = currentRadar.resource.issues.nodes[0].number;
   
   const dateString = today.getFullYear() + '-' + ('0' + (today.getMonth()+1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+  
+  console.log('hello world from top of file')
   
   // create a new radar
   const newRadar = await tools.github.issues.create({
