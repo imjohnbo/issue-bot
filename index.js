@@ -17,8 +17,6 @@ const updateCurrentRadarStr = (next) => {
 const updateNewRadarStr = (prev) => {
   let str = `:wave: Hi there!
 
-  :crown: First responder
-
   ### What are you focusing on this week?`;
 
   str += prev ? `
@@ -38,15 +36,6 @@ Toolkit.run(async tools => {
   const currentRadarId = currentRadar.resource.issues.nodes[0].number;
   
   const dateString = today.getFullYear() + '-' + ('0' + (today.getMonth()+1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
-    
-  // create a new radar 
-  // FIXME ✖  fatal     HttpError: Validation Failed 
-  // at /node_modules/@octokit/request/dist-node/index.js:85:23
-  // at processTicksAndRejections (internal/process/task_queues.js:89:5)
-  // at async /index.js:46:20
-
-  console.log(tools.context.repo);
-  console.log(updateNewRadarStr(currentRadarId));
 
   const newRadar = await tools.github.issues.create({
     ...tools.context.repo,
@@ -55,8 +44,6 @@ Toolkit.run(async tools => {
     labels: ['radar'],
     assignees: assignees
   });
-
-  console.log('after new radar')
   
   const newRadarId = newRadar.data.number;
 
@@ -66,15 +53,6 @@ Toolkit.run(async tools => {
     number: currentRadarId,
     body: updateCurrentRadarStr(newRadarId)
   });
-
-  console.log('currentRadarId: ', currentRadarId);
-
-  const oldOriginalComment = await tools.github.issues.get({
-    ...tools.context.repo,
-    issue_number: currentRadarId
-  });
-
-  console.log(oldOriginalComment);
 
   // close out the old
   const closedRadar = await tools.github.issues.update({
