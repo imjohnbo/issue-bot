@@ -56,6 +56,8 @@ Toolkit.run(async tools => {
     body: updateCurrentRadarStr(newRadarId)
   });
 
+  console.log('currentRadarId: ', currentRadarId);
+  
   const oldOriginalComment = await tools.github.issues.get({
     ...tools.context.repo,
     issue_number: currentRadarId
