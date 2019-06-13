@@ -36,6 +36,8 @@ Toolkit.run(async tools => {
   
   // grab the current radar
   const currentRadar = await tools.github.graphql(getCurrentRadarStr);
+  console.log('after currentRadar: ');
+
   const currentRadarId = currentRadar.resource.issues.nodes[0].number;
   
   const dateString = today.getFullYear() + '-' + ('0' + (today.getMonth()+1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
