@@ -31,6 +31,8 @@ const updateNewRadarStr = (prev) => {
 Toolkit.run(async tools => {
   const today = new Date();
   const assignees = process.env.ASSIGNEES.split(' ');
+
+  console.log('hello world from top of file')
   
   // grab the current radar
   const currentRadar = await tools.github.graphql(getCurrentRadarStr);
@@ -57,7 +59,7 @@ Toolkit.run(async tools => {
   });
 
   console.log('currentRadarId: ', currentRadarId);
-  
+
   const oldOriginalComment = await tools.github.issues.get({
     ...tools.context.repo,
     issue_number: currentRadarId
