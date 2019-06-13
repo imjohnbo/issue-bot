@@ -31,18 +31,23 @@ const updateNewRadarStr = (prev) => {
 Toolkit.run(async tools => {
   const today = new Date();
   const assignees = process.env.ASSIGNEES.split(' ');
-
-  console.log('assignees: ', assignees);
   
   // grab the current radar
   const currentRadar = await tools.github.graphql(getCurrentRadarStr);
-  console.log('after currentRadar: ');
 
   const currentRadarId = currentRadar.resource.issues.nodes[0].number;
   
   const dateString = today.getFullYear() + '-' + ('0' + (today.getMonth()+1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
     
-  // create a new radar
+  // create a new radar 
+  // FIXME ✖  fatal     HttpError: Validation Failed 
+  // at /node_modules/@octokit/request/dist-node/index.js:85:23
+  // at processTicksAndRejections (internal/process/task_queues.js:89:5)
+  // at async /index.js:46:20
+
+  console.log(tools.context.repo);
+  console.log(updateNewRadarStr(currentRadarId));
+
   const newRadar = await tools.github.issues.create({
     ...tools.context.repo,
     title: `Weekly Radar, week of ${dateString}`,
