@@ -27,6 +27,9 @@ const updateNewRadarStr = (prev) => {
 };
 
 Toolkit.run(async tools => {
+  
+  console.log('process.env is ', JSON.stringify(process.env));
+  
   const today = new Date();
   const assignees = process.env.ASSIGNEES.split(' ');
   
