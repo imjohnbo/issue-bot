@@ -1,4 +1,3 @@
-const { Toolkit } = require('actions-toolkit');
 const repo = process.env.GITHUB_REPOSITORY;
 const getCurrentRadarStr = `{
   resource(url: "${repo}") {
@@ -26,7 +25,7 @@ const updateNewRadarStr = (prev) => {
   return str;
 };
 
-Toolkit.run(async tools => {
+async function exec() {
   const today = new Date();
   const assignees = process.env.ASSIGNEES.split(' ');
   
@@ -61,4 +60,6 @@ Toolkit.run(async tools => {
     state: 'closed'
   });
 
-});
+}
+
+exec();

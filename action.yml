@@ -1,0 +1,11 @@
+
+name: 'Weekly Radar'
+description: 'Keep your team in sync with a Weekly Radar'
+author: 'imjohnbo'
+inputs: 
+  assignees:
+    description: 'Space delimited list of Weekly Radar assignees'
+    default: ''
+runs:
+  using: 'node12'
+  main: 'index.js'

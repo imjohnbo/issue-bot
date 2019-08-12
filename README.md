@@ -4,18 +4,21 @@
 This GitHub Action will try to find the first open issue with a `radar` label, close it, and link it to a newly created Weekly Radar template issue. Finally, it will assign the new issue to `ASSIGNEES`.
 
 ```
-workflow "My Weekly Radar" {
-  on = "schedule(0 8 * * 1)"
-  resolves = ["weekly-radar"]
-}
+name: Weekly Radar
+on:
+  schedule:
+  - cron: 0 12 * * 1
 
-action "weekly-radar" {
-  uses = "imjohnbo/weekly-radar@master"
-  secrets = ["GITHUB_TOKEN"]
-  env = {
-    ASSIGNEES = "username1 username2 username3"
-  }
-}
+jobs:
+  weekly_radar:
+    name: Close Old and Open New Weekly Radar
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: weekly-radar
+      uses: imjohnbo/weekly-radar@master
+      with:
+        assignees: "some space delimited list of assignees"
 ```
 
 ## Miscellaneous

@@ -6,10 +6,6 @@
     "start": "node ./index.js",
     "test": "jest"
   },
-  "dependencies": {
-    "actions-toolkit": "^2.1.0",
-    "njwt": "^1.0.0"
-  },
   "devDependencies": {
     "jest": "^24.5.0"
   }
