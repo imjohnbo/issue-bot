@@ -7,6 +7,7 @@ inputs:
     description: 'Space delimited list of Weekly Radar assignees'
     default: ''
   patToken:
+    description: 'Personal Access Token with issue write access'
 runs:
   using: 'node12'
   main: 'index.js'
