@@ -1,3 +1,4 @@
+const core = require('@actions/core');
 const repo = process.env.GITHUB_REPOSITORY;
 const getCurrentRadarStr = `{
   resource(url: "${repo}") {
@@ -27,7 +28,8 @@ const updateNewRadarStr = (prev) => {
 
 async function exec() {
   const today = new Date();
-  const assignees = process.env.ASSIGNEES.split(' ');
+  const assigneesStr = core.getInput('assignees');
+  const assignees = assigneesStr.split(' ');
   
   // grab the current radar
   const currentRadar = await tools.github.graphql(getCurrentRadarStr);
