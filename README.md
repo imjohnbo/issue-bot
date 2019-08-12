@@ -1,5 +1,7 @@
 # Weekly Radar
 
+:star: Updated for [the latest version](https://github.blog/2019-08-08-github-actions-now-supports-ci-cd/) of [GitHub Actions](https://help.github.com/en/categories/automating-your-workflow-with-github-actions) :star: 
+
 ## Usage
 This GitHub Action will try to find the first open issue with a `radar` label, close it, and link it to a newly created Weekly Radar template issue. Finally, it will assign the new issue to `ASSIGNEES`.
 
