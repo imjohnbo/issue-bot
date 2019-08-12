@@ -55,14 +55,14 @@ async function exec() {
   // create comment on the old that points to the new
   const oldComment = await octokit.issues.createComment({
     ...github.context.repo,
-    number: currentRadarId,
+    issue_number: currentRadarId,
     body: updateCurrentRadarStr(newRadarId)
   });
 
   // close out the old
   const closedRadar = await octokit.issues.update({
     ...github.context.repo,
-    number: currentRadarId,
+    issue_number: currentRadarId,
     state: 'closed'
   });
 
