@@ -33,7 +33,7 @@ jobs:
 * `token` is the automatically-generated GitHub token that is scoped for the repository whose workflow calls the action.
 
 ## Contributing
-Feel free to open an issue, or better yet, a pull request!
+Feel free to open an issue, or better yet, a [pull request](https://github.com/imjohnbo/weekly-radar/compare)!
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
