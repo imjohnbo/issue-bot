@@ -1,7 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 // This should be a token with access to your repository scoped in as a secret.
-const myToken = core.getInput('patToken'); 
+const myToken = core.getInput('token'); 
 const octokit = new github.GitHub(myToken);
 const repo = process.env.GITHUB_REPOSITORY;
 const getCurrentRadarStr = `{
