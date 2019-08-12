@@ -1,4 +1,8 @@
 const core = require('@actions/core');
+const github = require('@actions/github');
+// This should be a token with access to your repository scoped in as a secret.
+const myToken = core.getInput('patToken'); 
+const octokit = new github.GitHub(myToken);
 const repo = process.env.GITHUB_REPOSITORY;
 const getCurrentRadarStr = `{
   resource(url: "${repo}") {
@@ -32,14 +36,14 @@ async function exec() {
   const assignees = assigneesStr.split(' ');
   
   // grab the current radar
-  const currentRadar = await tools.github.graphql(getCurrentRadarStr);
+  const currentRadar = await octokit.graphql(getCurrentRadarStr);
 
   const currentRadarId = currentRadar.resource.issues.nodes[0].number;
   
   const dateString = today.getFullYear() + '-' + ('0' + (today.getMonth()+1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
 
-  const newRadar = await tools.github.issues.create({
-    ...tools.context.repo,
+  const newRadar = await octokit.issues.create({
+    ...github.context.repo,
     title: `Weekly Radar, week of ${dateString}`,
     body: updateNewRadarStr(currentRadarId),
     labels: ['radar'],
@@ -49,15 +53,15 @@ async function exec() {
   const newRadarId = newRadar.data.number;
 
   // create comment on the old that points to the new
-  const oldComment = await tools.github.issues.createComment({
-    ...tools.context.repo,
+  const oldComment = await octokit.issues.createComment({
+    ...github.context.repo,
     number: currentRadarId,
     body: updateCurrentRadarStr(newRadarId)
   });
 
   // close out the old
-  const closedRadar = await tools.github.issues.update({
-    ...tools.context.repo,
+  const closedRadar = await octokit.issues.update({
+    ...github.context.repo,
     number: currentRadarId,
     state: 'closed'
   });

@@ -10,6 +10,7 @@
     "jest": "^24.5.0"
   },
   "dependencies": {
-    "@actions/core": "^1.0.0"
+    "@actions/core": "^1.0.0",
+    "@actions/github": "^1.0.0"
   }
 }
