@@ -19,12 +19,16 @@ jobs:
       uses: imjohnbo/weekly-radar@master
       with:
         assignees: "some space delimited list of assignees"
+        token: ${{ secrets.github_token }}
 ```
 
 ## Miscellaneous
 
 * `schedule(*,*,*,*,*)` is just [one option](https://developer.github.com/actions/managing-workflows/creating-and-cancelling-a-workflow/#scheduling-a-workflow) based on cron schedules. Knock yourself out by instead responding to [events](https://developer.github.com/actions/managing-workflows/workflow-configuration-options/#events-supported-in-workflow-files)!
-* `env.ASSIGNEES` is a space delimited list of assignees for the new issue.
+
+## Inputs
+* `assignees` is a space delimited list of assignees for the new issue.
+* `token` is the automatically-generated GitHub token that is scoped for the repository whose workflow calls the action.
 
 ## Contributing
 Feel free to open an issue, or better yet, a pull request!
