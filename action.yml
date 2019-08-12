@@ -6,6 +6,7 @@ inputs:
   assignees:
     description: 'Space delimited list of Weekly Radar assignees'
     default: ''
+  patToken:
 runs:
   using: 'node12'
   main: 'index.js'
