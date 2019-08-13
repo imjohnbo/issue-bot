@@ -1,13 +1,15 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const assigneesStr = core.getInput('assignees');
+const labelStr = core.getInput('label');
 // This should be a token with access to your repository scoped in as a secret.
-const githubToken = core.getInput('token'); 
+const githubToken = process.env.GITHUB_TOKEN;
 const octokit = new github.GitHub(githubToken);
 const repo = process.env.GITHUB_REPOSITORY;
 const getCurrentRadarStr = `{
   resource(url: "${repo}") {
     ... on Repository {
-      issues(first:1, labels:["radar"], states:[OPEN]) {
+      issues(first:1, labels:[${labelStr}], states:[OPEN]) {
         nodes {
           number
         }
@@ -32,7 +34,6 @@ const createNewRadarStr = (prev) => {
 
 async function exec() {
   const today = new Date();
-  const assigneesStr = core.getInput('assignees');
   const assignees = assigneesStr.split(' ');
   const currentRadar = (await octokit.graphql(getCurrentRadarStr)).resource.issues.nodes[0];
   const currentRadarId = !!currentRadar ? currentRadar.number : undefined;
@@ -43,7 +44,7 @@ async function exec() {
     ...github.context.repo,
     title: `Weekly Radar, week of ${dateString}`,
     body: createNewRadarStr(currentRadarId),
-    labels: ['radar'],
+    labels: [labelStr],
     assignees: assignees
   });
   
