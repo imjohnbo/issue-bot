@@ -6,9 +6,11 @@ inputs:
   assignees:
     description: 'Space delimited list of Weekly Radar assignees'
     default: ''
+    required: false
   label:
     description: 'Label attached to your Weekly Radar'
     default: 'radar'
+    required: false
 runs:
   using: 'node12'
   main: 'index.js'
