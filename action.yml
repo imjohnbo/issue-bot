@@ -2,6 +2,9 @@
 name: 'Weekly Radar'
 description: 'Keep your team in sync with a Weekly Radar'
 author: 'imjohnbo'
+branding:
+  icon: 'activity'
+  color: 'blue'
 inputs: 
   assignees:
     description: 'Space delimited list of Weekly Radar assignees'
