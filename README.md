@@ -6,6 +6,7 @@
 Use this GitHub Action in your team's repository to stay in touch about your plans for the week. Weekly Radar will find the first open issue with `label`, close it, and link it to a newly created Weekly Radar template issue. If there is no open issue with `label`, it will create one. Finally, it will assign the new issue to `assignees`.
 
 **Example workflow**:
+
 ```
 name: Weekly Radar
 on:
@@ -26,6 +27,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+**In action**:
+
+![Weekly Radar Image](./weekly-radar.png)
 
 ## Miscellaneous
 
