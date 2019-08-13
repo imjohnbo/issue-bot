@@ -18,12 +18,12 @@ const getCurrentRadarStr = `{
 const updateCurrentRadarStr = (next) => {
   return `Next: #${next}`;
 };
-const updateNewRadarStr = (prev) => {
+const createNewRadarStr = (prev) => {
   let str = `:wave: Hi there!
 
   ### What are you focusing on this week?`;
 
-  str += prev ? `
+  str += !!prev ? `
   
   Previously: #${prev}` : ``;
   
@@ -34,37 +34,36 @@ async function exec() {
   const today = new Date();
   const assigneesStr = core.getInput('assignees');
   const assignees = assigneesStr.split(' ');
-  
-  // grab the current radar
-  const currentRadar = await octokit.graphql(getCurrentRadarStr);
-
-  const currentRadarId = currentRadar.resource.issues.nodes[0].number;
-  
+  const currentRadar = (await octokit.graphql(getCurrentRadarStr)).resource.issues.nodes[0];
+  const currentRadarId = currentRadar.length ? currentRadar.number : undefined;
   const dateString = today.getFullYear() + '-' + ('0' + (today.getMonth()+1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
 
+  // create new radar
   const newRadar = await octokit.issues.create({
     ...github.context.repo,
     title: `Weekly Radar, week of ${dateString}`,
-    body: updateNewRadarStr(currentRadarId),
+    body: createNewRadarStr(currentRadarId),
     labels: ['radar'],
     assignees: assignees
   });
   
   const newRadarId = newRadar.data.number;
 
-  // create comment on the old that points to the new
-  const oldComment = await octokit.issues.createComment({
-    ...github.context.repo,
-    issue_number: currentRadarId,
-    body: updateCurrentRadarStr(newRadarId)
-  });
-
-  // close out the old
-  const closedRadar = await octokit.issues.update({
-    ...github.context.repo,
-    issue_number: currentRadarId,
-    state: 'closed'
-  });
+  if (!!currentRadarId) {
+    // create comment on the old that points to the new
+    await octokit.issues.createComment({
+      ...github.context.repo,
+      issue_number: currentRadarId,
+      body: updateCurrentRadarStr(newRadarId)
+    });
+  
+    // close out the old
+    await octokit.issues.update({
+      ...github.context.repo,
+      issue_number: currentRadarId,
+      state: 'closed'
+    });
+  }
 
 }
 
