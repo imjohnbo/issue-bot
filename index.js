@@ -9,7 +9,7 @@ const repo = process.env.GITHUB_REPOSITORY;
 const getCurrentRadarStr = `{
   resource(url: "${repo}") {
     ... on Repository {
-      issues(first:1, labels:[${labelStr}], states:[OPEN]) {
+      issues(first:1, labels:["${labelStr}"], states:[OPEN]) {
         nodes {
           number
         }
