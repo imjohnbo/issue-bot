@@ -35,7 +35,7 @@ async function exec() {
   const assigneesStr = core.getInput('assignees');
   const assignees = assigneesStr.split(' ');
   const currentRadar = (await octokit.graphql(getCurrentRadarStr)).resource.issues.nodes[0];
-  const currentRadarId = currentRadar.length ? currentRadar.number : undefined;
+  const currentRadarId = !!currentRadar ? currentRadar.number : undefined;
   const dateString = today.getFullYear() + '-' + ('0' + (today.getMonth()+1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
 
   // create new radar
