@@ -4,10 +4,21 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./index.js",
-    "test": "jest"
+    "test": "jest",
+    "build": "ncc build index.js",
+    "lint": "eslint index.js --fix",
+    "format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|less|scss|ts|tsx|md|graphql|mdx)\"",
+    "precommit": "npm run build && git add dist/"
   },
   "devDependencies": {
-    "jest": "^24.5.0"
+    "@zeit/ncc": "^0.20.5",
+    "eslint": "^6.5.1",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^6.3.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "husky": "^3.0.9",
+    "jest": "^24.5.0",
+    "prettier": "^1.18.2"
   },
   "dependencies": {
     "@actions/core": "^1.0.0",
