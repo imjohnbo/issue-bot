@@ -1,11 +1,10 @@
-
 name: 'Weekly Radar'
 description: 'Keep your team in sync with a Weekly Radar'
 author: 'imjohnbo'
 branding:
   icon: 'activity'
   color: 'blue'
-inputs: 
+inputs:
   assignees:
     description: 'Space delimited list of Weekly Radar assignees'
     default: ''
@@ -14,6 +13,10 @@ inputs:
     description: 'Label attached to your Weekly Radar'
     default: 'radar'
     required: false
+  pinned:
+    description: 'Whether to pin your Weekly Radar and unpin the previous one'
+    default: false
+    required: false
 runs:
   using: 'node12'
-  main: 'index.js'
+  main: 'dist/index.js'
