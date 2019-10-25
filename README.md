@@ -15,7 +15,7 @@ new issue to `assignees` and [pin the issue](https://help.github.com/en/github/m
 name: Weekly Radar
 on:
   schedule:
-  - cron: 0 12 * * 1  # https://crontab.guru
+  - cron: 0 12 * * 1  # Midnight on Monday – https://crontab.guru
 
 jobs:
   weekly_radar:
