@@ -18,8 +18,8 @@ inputs:
     default: false
     required: false
 outputs:
-  issue_id:
-    description: 'The issue ID created by the radar'
+  issue_number:
+    description: 'The issue number of the created radar issue'
 runs:
   using: 'node12'
   main: 'dist/index.js'

@@ -149,7 +149,7 @@ Previously: #${currentRadarNumber}`
       await pin(newRadarId);
     }
 
-    core.setOutput('issue_id', newRadarId);
+    core.setOutput('issue_number', newRadarNumber);
   }
   catch(error) {
     core.error(`Error encountered: ${error}.`);
