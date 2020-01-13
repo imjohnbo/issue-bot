@@ -17,6 +17,9 @@ inputs:
     description: 'Whether to pin your Weekly Radar and unpin the previous one'
     default: false
     required: false
+outputs:
+  issue_id:
+    description: 'The issue ID created by the radar'
 runs:
   using: 'node12'
   main: 'dist/index.js'
