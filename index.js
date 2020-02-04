@@ -39,11 +39,57 @@ const pin = issueId => {
   });
 };
 
+const getTemplate = async (currentRadarNumber, templateFile) => {
+  let defaultTemplate = 
+`:wave: Hi there!
+    
+### What are you focusing on this week?`;
+  
+defaultTemplate += currentRadarNumber
+
+? `
+
+Previously: #${currentRadarNumber}`
+
+: ``;
+  let templateFromFile = '';
+
+  if (templateFile) {
+    const path = `.github/ISSUE_TEMPLATE/${templateFile}`;
+  
+    try {
+      templateFromFile = (await octokit.repos.getContents({
+        ...github.context.repo,
+        path,
+        mediaType: {
+          format: "raw"
+        }
+      })).data;
+    }
+    catch(error) {
+      core.error('Error encountered retrieving issue template: error');
+      core.warning('Proceeding with creating default template...');
+
+      return defaultTemplate;
+    }
+  
+    // remove unnecessary YAML metadata found at the top of issue templates (https://help.github.com/en/github/building-a-strong-community/about-issue-and-pull-request-templates#issue-templates)
+    const hasYamlFrontMatter = templateFromFile.slice(0,3) === '---';
+
+    if (hasYamlFrontMatter) {
+      templateFromFile = templateFromFile.split('---')[2].trim();
+    }
+  }
+
+  return templateFromFile ? templateFromFile : defaultTemplate;
+};
+
 async function run() {
   try {
-    const assignees = core.getInput('assignees').split(' ');
+    const assignees = core.getInput('assignees').split(' '); // 'user1 user2' --> ['user1', 'user2']
     const label = core.getInput('label');
     const pinned = core.getInput('pinned') === 'true';
+    const templateFile = core.getInput('template');
   
     // Form date long to short, ex. 2019-10-21
     const today =
@@ -75,18 +121,11 @@ async function run() {
   
     core.debug(`Current radar issue number: ${currentRadarNumber}`);
 
-    let template = 
-`:wave: Hi there!
-    
-### What are you focusing on this week?`;
-  
-template += currentRadarNumber
+    core.debug(`Getting template from ${templateFile}`);
 
-? `
+    const template = await getTemplate(currentRadarNumber, templateFile);
 
-Previously: #${currentRadarNumber}`
-
-: ``;
+    core.debug(`template: ${template}`);
   
     // Create a new radar
     const { data: { number: newRadarNumber } } = await octokit.issues.create({

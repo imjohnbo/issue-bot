@@ -15,7 +15,11 @@ inputs:
     required: false
   pinned:
     description: 'Whether to pin your Weekly Radar and unpin the previous one'
-    default: false
+    default: 'false'
+    required: false
+  template:
+    description: 'Filename of template used in radar issue'
+    default: ''
     required: false
 outputs:
   issue_number:
