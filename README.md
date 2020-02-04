@@ -29,6 +29,7 @@ jobs:
         assignees: "some space delimited list of assignees"
         label: "my-custom-label"
         pinned: true
+        template: "my_template.md"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -50,6 +51,7 @@ jobs:
   Radar.
 - `label` (optional) is the label to be attached to the Weekly Radar.
 - `pinned` (optional) is a boolean flag that [pins the issue](https://help.github.com/en/github/managing-your-work-on-github/pinning-an-issue-to-your-repository) to your repository for easier access.
+- `template` (optiona) is the filename of the [issue template](https://help.github.com/en/github/building-a-strong-community/about-issue-and-pull-request-templates#issue-templates) to use in the radar issue. It is relative to where issue templates are kept, in `.github/ISSUE_TEMPLATE`, so this action looks for `template: my_template.md` at `.github/ISSUE_TEMPLATE/my_template.md`.
 
 ## Environment variables
 
