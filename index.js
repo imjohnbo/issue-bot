@@ -187,6 +187,8 @@ async function run() {
       core.debug(`newRadarId: ${newRadarId}`);
       await pin(newRadarId);
     }
+
+    core.setOutput('issue_number', newRadarNumber);
   }
   catch(error) {
     core.error(`Error encountered: ${error}.`);
