@@ -17,6 +17,10 @@ inputs:
     description: 'Whether to pin your Weekly Radar and unpin the previous one'
     default: false
     required: false
+  template:
+    description: 'Filename of template used in radar issue'
+    default: ''
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'
