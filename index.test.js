@@ -1,3 +1,3 @@
 describe('Weekly Radar', () => {
-  it('exits successfully', () => {});
+	it('exits successfully', () => {});
 });
