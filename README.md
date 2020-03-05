@@ -31,7 +31,7 @@ jobs:
       uses: actions/checkout@v2
       
     - name: issue-bot
-      uses: imjohnbo/issue-bot@v2.x
+      uses: imjohnbo/issue-bot@v2
       with:
         assignees: "comma, delimited, list, of, handles" # GitHub handles without the @
         labels: "standup"
@@ -61,7 +61,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: issue-bot
-      uses: imjohnbo/issue-bot@v2.x
+      uses: imjohnbo/issue-bot@v2
       with:
         assignees: "me"     # your GitHub handle without the @
         labels: "tps, bug"
@@ -95,7 +95,7 @@ jobs:
 
     - name: issue-bot
       if: failure()
-      uses: imjohnbo/issue-bot@v2.x
+      uses: imjohnbo/issue-bot@v2
       with:
         assignees: "handles, of, my, teammates"    # GitHub handles without the @
         label: "ci"
