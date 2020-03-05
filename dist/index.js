@@ -1055,7 +1055,7 @@ const isPinned = async issueId => {
   const query = `{
     resource(url: "${repo}") {
       ... on Repository {
-        pinnedIssues(first: 10) {
+        pinnedIssues(last: 3) {
           nodes {
             issue {
               id
@@ -1077,9 +1077,13 @@ const isPinned = async issueId => {
 
 // Given a GraphQL issue id, unpin the issue
 const unpin = async issueId => {
+  core.debug(`Check if ${issueId} is already pinned...`);
+
   if (!(await isPinned(issueId))) {
     return;
   }
+
+  core.debug(`Unpinning ${issueId}...`);
 
   const mutation = `mutation {
     unpinIssue(input: {issueId: "${issueId}"}) {
@@ -1099,6 +1103,8 @@ const unpin = async issueId => {
 
 // Given a GraphQL issue id, pin the issue
 const pin = issueId => {
+  core.debug(`Pinning ${issueId}...`);
+
   const mutation = `mutation {
     pinIssue(input: {issueId: "${issueId}"}) {
       issue {
@@ -1205,7 +1211,7 @@ async function run () {
     const latestIssueQuery = `{
       resource(url: "${repo}") {
         ... on Repository {
-          issues(first:1, labels:${JSON.stringify(metadata.labels)}, states:[OPEN]) {
+          issues(last:1, labels:${JSON.stringify(metadata.labels)}, states:[OPEN]) {
             nodes {
               number
               id
@@ -1278,10 +1284,8 @@ async function run () {
 
       // If the pinned input is true, pin the current, unpin the previous
       if (pinned) {
-        core.debug(`Pinning ${newRadarId}...`);
-        await pin(newRadarId);
-        core.debug(`Unpinning ${previousIssueId}...`);
         await unpin(previousIssueId);
+        await pin(newRadarId);
       }
     }
 
