@@ -1204,8 +1204,8 @@ async function run () {
     }
 
     // Format data for API call
-    metadata.assignees = metadata.assignees.replace(' ', '').split(','); // 'user1, user2' --> ['user1', 'user2']
-    metadata.labels = metadata.labels.replace(' ', '').split(','); // 'label1, label2' --> ['label1', 'label2']
+    metadata.assignees = metadata.assignees.split(',').map(s => s.trim()); // 'user1, user2' --> ['user1', 'user2']
+    metadata.labels = metadata.labels.split(',').map(s => s.trim()); // 'label1, label2' --> ['label1', 'label2']
 
     // GraphQL query to get latest matching open issue if it exists
     const latestIssueQuery = `{
