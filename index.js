@@ -1,12 +1,42 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const yaml = require('js-yaml');
 
 const token = process.env.GITHUB_TOKEN;
 const octokit = new github.GitHub(token);
 const repo = process.env.GITHUB_REPOSITORY;
 
+// Is issue with issueId already pinned to this repo?
+const isPinned = async issueId => {
+  const query = `{
+    resource(url: "${repo}") {
+      ... on Repository {
+        pinnedIssues(first: 10) {
+          nodes {
+            issue {
+              id
+            }
+          }
+        }
+      }
+    }
+  }`;
+  const data = await octokit.graphql({
+    query,
+    headers: {
+      accept: 'application/vnd.github.elektra-preview+json'
+    }
+  });
+  const pinnedIssues = data.resource.pinnedIssues.nodes || [];
+  return pinnedIssues.findIndex(pinnedIssue => pinnedIssue.issue.id === issueId) >= 0;
+};
+
 // Given a GraphQL issue id, unpin the issue
-const unpin = issueId => {
+const unpin = async issueId => {
+  if (!(await isPinned(issueId))) {
+    return;
+  }
+
   const mutation = `mutation {
     unpinIssue(input: {issueId: "${issueId}"}) {
       issue {
@@ -14,11 +44,12 @@ const unpin = issueId => {
       }
     }
   }`;
+
   return octokit.graphql({
     query: mutation,
     headers: {
-      accept: `application/vnd.github.elektra-preview+json`,
-    },
+      accept: 'application/vnd.github.elektra-preview+json'
+    }
   });
 };
 
@@ -34,76 +65,103 @@ const pin = issueId => {
   return octokit.graphql({
     query: mutation,
     headers: {
-      accept: `application/vnd.github.elektra-preview+json`,
-    },
+      accept: 'application/vnd.github.elektra-preview+json'
+    }
   });
 };
 
-const getTemplate = async (currentRadarNumber, templateFile) => {
-  let defaultTemplate = 
-`:wave: Hi there!
-    
-### What are you focusing on this week?`;
-  
-defaultTemplate += currentRadarNumber
-
-? `
-
-Previously: #${currentRadarNumber}`
-
-: ``;
-  let templateFromFile = '';
-
-  if (templateFile) {
-    const path = `.github/ISSUE_TEMPLATE/${templateFile}`;
-  
-    try {
-      templateFromFile = (await octokit.repos.getContents({
-        ...github.context.repo,
-        path,
-        mediaType: {
-          format: "raw"
-        }
-      })).data;
-    }
-    catch(error) {
-      core.error('Error encountered retrieving issue template: error');
-      core.warning('Proceeding with creating default template...');
-
-      return defaultTemplate;
-    }
-  
-    // remove unnecessary YAML metadata found at the top of issue templates (https://help.github.com/en/github/building-a-strong-community/about-issue-and-pull-request-templates#issue-templates)
-    const hasYamlFrontMatter = templateFromFile.slice(0,3) === '---';
-
-    if (hasYamlFrontMatter) {
-      templateFromFile = templateFromFile.split('---')[2].trim();
-    }
+// Return issue body, plus the metadata header if from a standard issue template
+const getTemplateFromFile = async (templateFilePath) => {
+  if (!templateFilePath) {
+    return;
   }
 
-  return templateFromFile ? templateFromFile : defaultTemplate;
+  let template = '';
+  let metadata = {};
+
+  core.debug(`Getting contents of: ${templateFilePath}`);
+
+  // Get contents of template file
+  try {
+    template = (await octokit.repos.getContents({
+      ...github.context.repo,
+      path: templateFilePath,
+      mediaType: {
+        format: 'raw'
+      }
+    })).data;
+  } catch (error) {
+    core.error(`Error encountered retrieving issue template: ${error}`);
+  }
+
+  core.debug(`template: ${template}`);
+
+  // Does this issue template have a YAML header at the top
+  const hasHeader = template.slice(0, 3) === '---';
+
+  if (hasHeader) {
+    // Get header, which is formatted as YAML key/values
+    const header = yaml.safeLoad(template.split('---')[1].trim());
+
+    core.debug(`header: ${header}`);
+
+    metadata = {
+      assignees: header.assignees || '',
+      labels: header.labels || '',
+      title: header.title || ''
+    };
+    // remove unnecessary YAML metadata found at the top of issue templates (https://help.github.com/en/github/building-a-strong-community/about-issue-and-pull-request-templates#issue-templates)
+    template = template.split('---')[2].trim();
+  }
+
+  return {
+    template: template || '',
+    metadata: metadata || {}
+  };
 };
 
-async function run() {
+async function run () {
   try {
-    const assignees = core.getInput('assignees').split(' '); // 'user1 user2' --> ['user1', 'user2']
-    const label = core.getInput('label');
+    const assignees = core.getInput('assignees');
+    const title = core.getInput('title');
+    let body = core.getInput('body');
+    const labels = core.getInput('labels');
     const pinned = core.getInput('pinned') === 'true';
+    const closePrevious = core.getInput('close-previous') === 'true';
     const templateFile = core.getInput('template');
-  
-    // Form date long to short, ex. 2019-10-21
-    const today =
-      (new Date()).getFullYear() +
-      '-' +
-      ('0' + ((new Date()).getMonth() + 1)).slice(-2) +
-      '-' +
-      ('0' + (new Date()).getDate()).slice(-2);
-  
-    // GraphQL query to get latest open weekly radar issue if it exists
-    const latestRadarQuery = `{
+    let template = '';
+    let metadata = {};
+
+    if (templateFile) {
+      ({ template, metadata } = await getTemplateFromFile(templateFile));
+    }
+
+    // Give precedence to assignees, labels, and title inputs; fall back to values from template file
+    metadata.assignees = assignees || metadata.assignees || '';
+    metadata.labels = labels || metadata.labels || '';
+    metadata.title = title || metadata.title || '';
+    body = body || template;
+
+    core.debug(`metadata: ${JSON.stringify(metadata)}`);
+
+    // Title is a required field
+    if (!metadata.title) {
+      throw Error('Title must be supplied in issue template or as an input.');
+    }
+
+    if (!metadata.labels) {
+      throw Error('Labels must be supplied in issue template or as an input.');
+    }
+
+    // Format data for API call
+    metadata.assignees = metadata.assignees.replace(' ', '').split(','); // 'user1, user2' --> ['user1', 'user2']
+    metadata.labels = metadata.labels.replace(' ', '').split(','); // 'label1, label2' --> ['label1', 'label2']
+
+    // GraphQL query to get latest matching open issue if it exists
+    const latestIssueQuery = `{
       resource(url: "${repo}") {
         ... on Repository {
-          issues(first:1, labels:["${label}"], states:[OPEN]) {
+          issues(first:1, labels:${JSON.stringify(metadata.labels)}, states:[OPEN]) {
             nodes {
               number
               id
@@ -112,88 +170,83 @@ async function run() {
         }
       }
     }`;
-  
+
     // Run the query, save the number (ex. 79) and GraphQL id (ex. MDU6SXMzbWU0ODAxNzI0NDA=)
     const {
-      number: currentRadarNumber,
-      id: currentRadarId,
-    } = (await octokit.graphql(latestRadarQuery)).resource.issues.nodes[0] || {};
-  
-    core.debug(`Current radar issue number: ${currentRadarNumber}`);
+      number: previousIssueNumber,
+      id: previousIssueId
+    } = (await octokit.graphql(latestIssueQuery)).resource.issues.nodes[0] || {};
 
-    core.debug(`Getting template from ${templateFile}`);
+    core.debug(`Previous issue number: ${previousIssueNumber}`);
 
-    const template = await getTemplate(currentRadarNumber, templateFile);
-
-    core.debug(`template: ${template}`);
-  
-    // Create a new radar
-    const { data: { number: newRadarNumber } } = await octokit.issues.create({
+    // Create a new issue
+    const { data: { number: newIssueNumber } } = await octokit.issues.create({
       ...github.context.repo,
-      title: `Weekly Radar, week of ${today}`,
-      body: template,
-      labels: [label],
-      assignees: assignees,
+      title: metadata.title,
+      labels: metadata.labels,
+      assignees: metadata.assignees,
+      body
     }) || {};
 
-    core.debug(`New radar issue number: ${newRadarNumber}`);
+    core.debug(`New issue number: ${newIssueNumber}`);
+
+    if (+previousIssueNumber >= 0) {
+      // Create comment on the new that points to the previous
+      await octokit.issues.createComment({
+        ...github.context.repo,
+        issue_number: newIssueNumber,
+        body: `Previous in series: #${previousIssueNumber}`
+      });
+
+      // Create comment on the previous that points to the new
+      await octokit.issues.createComment({
+        ...github.context.repo,
+        issue_number: previousIssueNumber,
+        body: `Next in series: #${newIssueNumber}`
+      });
+    }
 
     const repositoryByNumberQuery = `{
       resource(url: "${repo}") {
         ... on Repository {
-          issue(number: ${newRadarNumber}){
+          issue(number: ${newIssueNumber}){
             id
           }
         }
       }
     }`;
-  
+
     // Query to get the GraphQL id (ex. MDX6SXMzbWU0ODAxNzI0NDA=) of the new issue that we have the number of
     const { id: newRadarId } = (await octokit.graphql(
-      repositoryByNumberQuery,
+      repositoryByNumberQuery
     )).resource.issue || {};
-  
-    // If there is a current weekly radar, close it out and point to the new
-    if (currentRadarNumber) {
-      // Create comment on the current that points to the new
-      await octokit.issues.createComment({
-        ...github.context.repo,
-        issue_number: currentRadarNumber,
-        body: `Next: #${newRadarNumber}`,
-      });
-  
-      // Close out the current
+
+    // If there is a previous issue, close it out and point to the new
+    if (+previousIssueNumber >= 0 && closePrevious) {
+      core.debug(`Closing issue number ${previousIssueNumber}...`);
+
+      // Close out the previous
       await octokit.issues.update({
         ...github.context.repo,
-        issue_number: currentRadarNumber,
-        state: 'closed',
+        issue_number: previousIssueNumber,
+        state: 'closed'
       });
-  
-      // If the pinned input is true, unpin the current
+
+      // If the pinned input is true, pin the current, unpin the previous
       if (pinned) {
-        try {
-          core.debug(`Unpinning ${currentRadarId}...`);
-          await unpin(currentRadarId);
-        }
-        catch(error) {
-          core.debug(`Pinning ${newRadarId}...`);
-          await pin(newRadarId);
-        }
+        core.debug(`Pinning ${newRadarId}...`);
+        await pin(newRadarId);
+        core.debug(`Unpinning ${previousIssueId}...`);
+        await unpin(previousIssueId);
       }
     }
-  
-    // If the pinned input is true, pin the new
-    if (pinned) {
-      core.debug(`newRadarId: ${newRadarId}`);
-      await pin(newRadarId);
-    }
 
-    core.setOutput('issue_number', newRadarNumber);
+    if (newIssueNumber) {
+      core.setOutput('issue-number', String(newIssueNumber));
+    }
+  } catch (error) {
+    core.setFailed(`Error encountered: ${error}.`);
   }
-  catch(error) {
-    core.error(`Error encountered: ${error}.`);
-  }
-  
 }
 
 run();

@@ -1,29 +1,41 @@
-name: 'Weekly Radar'
-description: 'Keep your team in sync with a Weekly Radar'
+name: 'Scheduled Issue'
+description: 'Automate your manual tasks with a scheduled issue'
 author: 'imjohnbo'
 branding:
   icon: 'activity'
   color: 'blue'
 inputs:
-  assignees:
-    description: 'Space delimited list of Weekly Radar assignees'
+  labels:
+    description: 'Comma delimited list of issue labels. Required value either as input or in YAML header of issue template.'
     default: ''
     required: false
-  label:
-    description: 'Label attached to your Weekly Radar'
-    default: 'radar'
+  title:
+    description: 'Issue title. Required value either as input or in YAML header of issue template.'
+    default: ''
+    required: false
+  assignees:
+    description: 'Comma delimited list of issue assignees'
+    default: ''
+    required: false
+  body:
+    description: 'Issue body'
+    default: ''
     required: false
   pinned:
-    description: 'Whether to pin your Weekly Radar and unpin the previous one'
+    description: 'Whether to pin this issue and unpin the previous one'
+    default: 'false'
+    required: false
+  close-previous:
+    description: 'Whether to close the most recent previous issue with a matching label'
     default: 'false'
     required: false
   template:
-    description: 'Filename of template used in radar issue'
+    description: 'Path to template used in issue, eg. .github/ISSUE_TEMPLATE/bug_report.md'
     default: ''
     required: false
 outputs:
-  issue_number:
-    description: 'The issue number of the created radar issue'
+  issue-number:
+    description: 'The issue number of the created issue'
 runs:
   using: 'node12'
   main: 'dist/index.js'

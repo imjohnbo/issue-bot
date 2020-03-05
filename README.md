@@ -1,68 +1,140 @@
-# Weekly Radar
+# Issue Bot
+
+## About
+
+Work on a distributed team? Try using Issue Bot as a Scrum [standup](https://en.wikipedia.org/wiki/Stand-up_meeting) process automation bot to keep track of what you're all working on. 🤖
+
+Have repeated tasks you're setting reminders for elsewhere? Issue Bot's got your back there, too. 👏
+
+Or just need an issue created on a certain condition? Issue Bot is there when your CI build breaks. 💔
+
+Issue Bot is a flexible GitHub Action that will open a new issue based on `input` values issue template of your choice. You can make it close the most recent one of its type, you can pin it, and since it's open source, [pull requests](https://github.com/imjohnbo/issue-bot/compare) are welcome!
 
 ## Usage
 
-Work on a distributed team? Try using Weekly Radar as a [stand up](https://en.wikipedia.org/wiki/Stand-up_meeting) process automation bot to keep track of what you're all working on. 🚀
+As a daily standup bot:
 
-Weekly Radar is GitHub Action that will find the first open issue with `label`,
-close it, and link it to a newly created Weekly Radar template issue. If there
-is no open issue with `label`, it will create one. It will also assign the
-new issue to `assignees` and [pin the issue](https://help.github.com/en/github/managing-your-work-on-github/pinning-an-issue-to-your-repository) (`pinned` = `true`) for easier access.
-
-**Example workflow**:
-
-```
-name: Weekly Radar
+```yml
+name: Daily Standup
 on:
   schedule:
-  - cron: 0 12 * * 1  # Midnight on Monday – https://crontab.guru
+  - cron: 0 12 * * *  # Every day at noon – https://crontab.guru
 
 jobs:
-  weekly_radar:
-    name: Close Old and Open New Weekly Radar
+  daily_standup:
+    name: Daily Standup
     runs-on: ubuntu-latest
     steps:
 
-    - name: weekly-radar
-      uses: imjohnbo/weekly-radar@master
+    # Repo code checkout required if `template` is used
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: issue-bot
+      uses: imjohnbo/issue-bot@v2.x
       with:
-        assignees: "some space delimited list of assignees"
-        label: "my-custom-label"
+        assignees: "comma, delimited, list, of, handles" # GitHub handles without the @
+        labels: "standup"
         pinned: true
-        template: "my_template.md"
+        close-previous: true
+        template: ".github/ISSUE_TEMPLATE/standup.md" # assignees, labels will be overridden if present in YAML header
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+To keep track of repeated tasks:
+
+```yml
+name: Generate TPS reports
+on:
+  schedule:
+  - cron: 0 0 1 * *  # First of every month – https://crontab.guru
+
+jobs:
+  tps_reports:
+    name: TPS reports
+    runs-on: ubuntu-latest
+    steps:
+
+    # Repo code checkout required if `template` is used
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: issue-bot
+      uses: imjohnbo/issue-bot@v2.x
+      with:
+        assignees: "me"     # your GitHub handle without the @
+        labels: "tps, bug"
+        pinned: false
+        close-previous: false
+        template: "tps.md" 
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+Or just downstream of a failed CI step 💔:
+
+```yml
+name: Continuous Integration
+on:
+  [push, pull_request]
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    steps:
+
+    # Repo code checkout required if `template` is used
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: CI
+      run: |
+        echo "...these are some CI steps..."
+
+    - name: issue-bot
+      if: failure()
+      uses: imjohnbo/issue-bot@v2.x
+      with:
+        assignees: "handles, of, my, teammates"    # GitHub handles without the @
+        label: "ci"
+        pinned: false
+        close-previous: false
+        template: "ci-failure.md"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+
 **In action**:
 
-![Weekly Radar Image](./weekly-radar.png)
-
-## Miscellaneous
-
-- `schedule(*,*,*,*,*)` is just
-  [one option](https://help.github.com/en/articles/events-that-trigger-workflows#scheduled-events)
-  based on POSIX cron syntax. Knock yourself out by instead responding to
-  [events](https://help.github.com/en/articles/events-that-trigger-workflows)!
+![Issue Bot Image](./issue-bot.png)
 
 ## Inputs
 
-- `assignees` (optional) is a space delimited list of assignees for the Weekly
-  Radar.
-- `label` (optional) is the label to be attached to the Weekly Radar.
-- `pinned` (optional) is a boolean flag that [pins the issue](https://help.github.com/en/github/managing-your-work-on-github/pinning-an-issue-to-your-repository) to your repository for easier access.
-- `template` (optiona) is the filename of the [issue template](https://help.github.com/en/github/building-a-strong-community/about-issue-and-pull-request-templates#issue-templates) to use in the radar issue. It is relative to where issue templates are kept, in `.github/ISSUE_TEMPLATE`, so this action looks for `template: my_template.md` at `.github/ISSUE_TEMPLATE/my_template.md`.
+- `labels`: Comma delimited list of issue labels. Required value either as input or in YAML header of issue template.
+- `title`: Issue title. Required value either as input or in YAML header of issue template.
+- `assignees`: Comma delimited list of issue assignees
+- `body`: Issue body
+- `pinned`: Whether to [pins the issue](https://help.github.com/en/github/managing-your-work-on-github/pinning-an-issue-to-your-repository) and unpin the previous one
+- `close-previous`: Whether to close the most recent previous issue with a matching label
+- `template`: Path to template used in issue, eg. `.github/ISSUE_TEMPLATE/bug_report.md`. Can also be a normal Markdown file with no YAML header (converted to `body`), in which case, `labels`, `title`, and `assignees` can be provided as inputs.
+
+## Outputs
+
+- `issue-number`: new issue number, if successfully created
 
 ## Environment variables
 
-- `GITHUB_TOKEN` is assigned the
+- `GITHUB_TOKEN` (required): should be assigned the
   [automatically-generated GitHub token](https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables)
   that is scoped for the repository whose workflow calls the Action.
 
 ## Contributing
 
 Feel free to open an issue, or better yet, a
-[pull request](https://github.com/imjohnbo/weekly-radar/compare)!
+[pull request](https://github.com/imjohnbo/issue-bot/compare)!
 
 ## License
 
