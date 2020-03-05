@@ -26,6 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+    # Repo code checkout required if `template` is used
+    - name: Checkout
+      uses: actions/checkout@v2
+      
     - name: issue-bot
       uses: imjohnbo/issue-bot@v2.x
       with:
@@ -52,6 +56,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+    # Repo code checkout required if `template` is used
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: issue-bot
       uses: imjohnbo/issue-bot@v2.x
       with:
@@ -76,6 +84,10 @@ jobs:
     name: CI
     runs-on: ubuntu-latest
     steps:
+
+    # Repo code checkout required if `template` is used
+    - name: Checkout
+      uses: actions/checkout@v2
 
     - name: CI
       run: |
