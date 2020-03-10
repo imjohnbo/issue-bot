@@ -1179,6 +1179,7 @@ async function run () {
     const pinned = core.getInput('pinned') === 'true';
     const closePrevious = core.getInput('close-previous') === 'true';
     const templateFile = core.getInput('template');
+    const linkedComments = core.getInput('linked-comments') === 'true';
     let template = '';
     let metadata = {};
 
@@ -1194,11 +1195,12 @@ async function run () {
 
     core.debug(`metadata: ${JSON.stringify(metadata)}`);
 
-    // Title is a required field
+    // Title is a required field, either from an input or a template
     if (!metadata.title) {
       throw Error('Title must be supplied in issue template or as an input.');
     }
 
+    // Lables is a required field, either from an input or a template
     if (!metadata.labels) {
       throw Error('Labels must be supplied in issue template or as an input.');
     }
@@ -1240,19 +1242,20 @@ async function run () {
 
     core.debug(`New issue number: ${newIssueNumber}`);
 
-    if (+previousIssueNumber >= 0) {
+    // Write comments linking the current and previous issue
+    if (+previousIssueNumber >= 0 && linkedComments) {
       // Create comment on the new that points to the previous
       await octokit.issues.createComment({
         ...github.context.repo,
         issue_number: newIssueNumber,
-        body: `Previous in series: #${previousIssueNumber}`
+        body: `Previously: #${previousIssueNumber}`
       });
 
       // Create comment on the previous that points to the new
       await octokit.issues.createComment({
         ...github.context.repo,
         issue_number: previousIssueNumber,
-        body: `Next in series: #${newIssueNumber}`
+        body: `Next: #${newIssueNumber}`
       });
     }
 
