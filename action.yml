@@ -5,6 +5,7 @@ branding:
   icon: 'activity'
   color: 'blue'
 inputs:
+  # Build-your-own
   labels:
     description: 'Comma delimited list of issue labels. Required value either as input or in YAML header of issue template.'
     default: ''
@@ -21,6 +22,12 @@ inputs:
     description: 'Issue body'
     default: ''
     required: false
+  # From a markdown template, optionally one with metadata headers like issue templates have (https://help.github.com/en/github/building-a-strong-community/about-issue-and-pull-request-templates#issue-templates)
+  template:
+    description: 'Path to template used in issue, eg. .github/ISSUE_TEMPLATE/bug_report.md'
+    default: ''
+    required: false
+  # Other
   pinned:
     description: 'Whether to pin this issue and unpin the previous one'
     default: 'false'
@@ -29,9 +36,9 @@ inputs:
     description: 'Whether to close the most recent previous issue with a matching label'
     default: 'false'
     required: false
-  template:
-    description: 'Path to template used in issue, eg. .github/ISSUE_TEMPLATE/bug_report.md'
-    default: ''
+  linked-comments:
+    description: 'Whether to comment links like "Previously: #345" and "Next: #346"'
+    default: 'true'
     required: false
 outputs:
   issue-number:
