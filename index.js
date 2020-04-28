@@ -1,3 +1,4 @@
+const date = require('datejs');
 const core = require('@actions/core');
 const github = require('@actions/github');
 const yaml = require('js-yaml');
@@ -129,9 +130,9 @@ const getTemplateFromFile = async (templateFilePath) => {
 async function run () {
   try {
     const assignees = core.getInput('assignees');
-    const title = core.getInput('title');
+    const title = `Notes ${Date.today().toString('M/dd/yy')}`;
     let body = core.getInput('body');
-    const labels = core.getInput('labels');
+    const labels = Date.today().toString('M/yy');
     const pinned = core.getInput('pinned') === 'true';
     const closePrevious = core.getInput('close-previous') === 'true';
     const templateFile = core.getInput('template');
