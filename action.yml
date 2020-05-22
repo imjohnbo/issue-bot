@@ -1,8 +1,8 @@
-name: 'Scheduled Issue'
-description: 'Automate your manual tasks with a scheduled issue'
+name: 'Issue Bot'
+description: 'Automate your manual tasks with an issue bot'
 author: 'imjohnbo'
 branding:
-  icon: 'activity'
+  icon: 'meh'
   color: 'blue'
 inputs:
   # Build-your-own
