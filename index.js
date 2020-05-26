@@ -1,4 +1,5 @@
 const core = require('@actions/core');
+const mustache = require('mustache');
 const github = require('@actions/github');
 const yaml = require('js-yaml');
 
@@ -186,6 +187,9 @@ async function run () {
     } = (await octokit.graphql(latestIssueQuery)).resource.issues.nodes[0] || {};
 
     core.debug(`Previous issue number: ${previousIssueNumber}`);
+
+    // Render body with previousIssueNumber
+    body = mustache.render(body, { previousIssueNumber });
 
     // Create a new issue
     const { data: { number: newIssueNumber } } = await octokit.issues.create({
