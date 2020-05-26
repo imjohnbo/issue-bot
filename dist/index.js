@@ -1248,13 +1248,6 @@ async function run () {
 
     // Write comments linking the current and previous issue
     if (+previousIssueNumber >= 0 && linkedComments) {
-      // Create comment on the new that points to the previous
-      await octokit.issues.createComment({
-        ...github.context.repo,
-        issue_number: newIssueNumber,
-        body: `Previously: #${previousIssueNumber}`
-      });
-
       // Create comment on the previous that points to the new
       await octokit.issues.createComment({
         ...github.context.repo,
