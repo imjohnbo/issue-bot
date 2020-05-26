@@ -1,22 +1,48 @@
-name: 'Weekly Radar'
-description: 'Keep your team in sync with a Weekly Radar'
+name: 'Issue-Bot'
+description: 'Automate your manual tasks with an issue bot'
 author: 'imjohnbo'
 branding:
-  icon: 'activity'
+  icon: 'meh'
   color: 'blue'
 inputs:
-  assignees:
-    description: 'Space delimited list of Weekly Radar assignees'
+  # Build-your-own
+  labels:
+    description: 'Comma delimited list of issue labels. Required value either as input or in YAML header of issue template.'
     default: ''
     required: false
-  label:
-    description: 'Label attached to your Weekly Radar'
-    default: 'radar'
+  title:
+    description: 'Issue title. Required value either as input or in YAML header of issue template.'
+    default: ''
     required: false
+  assignees:
+    description: 'Comma delimited list of issue assignees'
+    default: ''
+    required: false
+  body:
+    description: 'Issue body'
+    default: ''
+    required: false
+  # From a markdown template, optionally one with metadata headers like issue templates have (https://help.github.com/en/github/building-a-strong-community/about-issue-and-pull-request-templates#issue-templates)
+  template:
+    description: 'Path to template used in issue, eg. .github/ISSUE_TEMPLATE/bug_report.md'
+    default: ''
+    required: false
+  # Other
   pinned:
-    description: 'Whether to pin your Weekly Radar and unpin the previous one'
-    default: false
+    description: 'Whether to pin this issue and unpin the previous one'
+    default: 'false'
     required: false
+  close-previous:
+    description: 'Whether to close the most recent previous issue with a matching label'
+    default: 'false'
+    required: false
+  linked-comments:
+    description: 'Whether to comment links like "Previously: #345" and "Next: #346"'
+    default: 'true'
+    required: false
+outputs:
+  issue-number:
+    description: 'The issue number of the created issue'
 runs:
   using: 'node12'
   main: 'dist/index.js'

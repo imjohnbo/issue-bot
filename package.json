@@ -1,27 +1,32 @@
 {
-  "name": "weekly-radar",
-  "private": true,
+  "name": "issue-bot",
   "main": "index.js",
   "scripts": {
-    "start": "node ./index.js",
     "test": "jest",
     "build": "ncc build index.js",
-    "lint": "eslint index.js --fix",
-    "format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|less|scss|ts|tsx|md|graphql|mdx)\"",
-    "precommit": "npm run build && git add dist/"
+    "lint": "semistandard"
   },
   "devDependencies": {
-    "@zeit/ncc": "^0.20.5",
-    "eslint": "^6.5.1",
-    "eslint-config-airbnb": "^18.0.1",
-    "eslint-config-prettier": "^6.3.0",
-    "eslint-plugin-prettier": "^3.1.0",
-    "husky": "^3.0.9",
-    "jest": "^24.5.0",
-    "prettier": "^1.18.2"
+    "@zeit/ncc": "^0.21.1",
+    "husky": "^4.2.3",
+    "jest": "^25.1.0",
+    "semistandard": "^14.2.0"
   },
   "dependencies": {
     "@actions/core": "^1.0.0",
-    "@actions/github": "^1.0.0"
+    "@actions/github": "^2.1.1",
+    "js-yaml": "^3.13.1"
+  },
+  "semistandard": {
+    "ignore": [
+      "dist/**",
+      "node_modules/**",
+      "index.test.js"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run build && git add dist/"
+    }
   }
 }
