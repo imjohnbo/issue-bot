@@ -132,6 +132,12 @@ jobs:
   [automatically-generated GitHub token](https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables)
   that is scoped for the repository whose workflow calls the Action.
 
+## Template variables
+
+The issue body is treated as a [Handlebars](https://handlebarsjs.com) template, with support for template variables:
+
+- `previousIssueNumber`: The previous issue number in the series.
+
 ## Contributing
 
 Feel free to open an issue, or better yet, a
