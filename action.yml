@@ -1,9 +1,8 @@
 name: 'Scheduled Issue'
 description: 'Automate your manual tasks with an issue bot'
 author: 'imjohnbo'
-icon: 'at-sign'
 branding:
-  icon: 'meh'
+  icon: 'at-sign'
   color: 'blue'
 inputs:
   # Build-your-own
