@@ -1,4 +1,6 @@
 const core = require('@actions/core');
+const Handlebars = require('handlebars');
+
 const github = require('@actions/github');
 const yaml = require('js-yaml');
 
@@ -187,6 +189,9 @@ async function run () {
 
     core.debug(`Previous issue number: ${previousIssueNumber}`);
 
+    // Render body with previousIssueNumber
+    body = Handlebars.compile(body)({ previousIssueNumber });
+
     // Create a new issue
     const { data: { number: newIssueNumber } } = await octokit.issues.create({
       ...github.context.repo,
@@ -200,13 +205,6 @@ async function run () {
 
     // Write comments linking the current and previous issue
     if (+previousIssueNumber >= 0 && linkedComments) {
-      // Create comment on the new that points to the previous
-      await octokit.issues.createComment({
-        ...github.context.repo,
-        issue_number: newIssueNumber,
-        body: `Previously: #${previousIssueNumber}`
-      });
-
       // Create comment on the previous that points to the new
       await octokit.issues.createComment({
         ...github.context.repo,
