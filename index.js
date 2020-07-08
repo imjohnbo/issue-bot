@@ -1,5 +1,6 @@
 const core = require('@actions/core');
-const mustache = require('mustache');
+const Handlebars = require('handlebars');
+
 const github = require('@actions/github');
 const yaml = require('js-yaml');
 
@@ -189,7 +190,7 @@ async function run () {
     core.debug(`Previous issue number: ${previousIssueNumber}`);
 
     // Render body with previousIssueNumber
-    body = mustache.render(body, { previousIssueNumber });
+    body = Handlebars.compile(body)({ previousIssueNumber });
 
     // Create a new issue
     const { data: { number: newIssueNumber } } = await octokit.issues.create({
