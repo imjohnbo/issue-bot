@@ -90,7 +90,7 @@ const getTemplateFromFile = async (templateFilePath) => {
 
   // Get contents of template file
   try {
-    template = (await octokit.repos.getContents({
+    template = (await octokit.repos.getContent({
       ...github.context.repo,
       path: templateFilePath,
       mediaType: {
