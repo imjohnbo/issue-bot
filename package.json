@@ -3,20 +3,19 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build": "ncc build index.js",
+    "build": "ncc build --minify index.js",
     "lint": "semistandard"
   },
   "devDependencies": {
-    "@zeit/ncc": "^0.21.1",
-    "husky": "^4.2.3",
-    "jest": "^25.1.0",
-    "semistandard": "^14.2.0"
+    "husky": "^4.3.0",
+    "semistandard": "^14.2.3"
   },
   "dependencies": {
-    "@actions/core": "^1.0.0",
-    "@actions/github": "^2.1.1",
+    "@actions/core": "^1.2.5",
+    "@actions/github": "^4.0.0",
+    "@vercel/ncc": "^0.24.1",
     "handlebars": "^4.7.6",
-    "js-yaml": "^3.13.1"
+    "js-yaml": "^3.14.0"
   },
   "semistandard": {
     "ignore": [
