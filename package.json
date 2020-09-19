@@ -3,7 +3,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build": "ncc build --minify index.js",
+    "build": "ncc build index.js",
     "lint": "semistandard"
   },
   "devDependencies": {
