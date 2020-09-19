@@ -124,11 +124,11 @@ const getTemplateFromFile = async (templateFilePath) => {
       labels: header.labels || '',
       title: header.title || ''
     };
-    
+
     // Assume if none of these are set, it's just a normal HR ¯\_(ツ)_/¯
     // https://github.com/imjohnbo/issue-bot/issues/14
     if (metadata.assignees || metadata.labels || metadata.title) {
-      // remove unnecessary YAML metadata found at the top of issue templates 
+      // remove unnecessary YAML metadata found at the top of issue templates
       // https://help.github.com/en/github/building-a-strong-community/about-issue-and-pull-request-templates#issue-templates
       template = template.split('---').slice(2).join('---').trim();
     }
