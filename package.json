@@ -11,7 +11,7 @@
     "semistandard": "^14.2.3"
   },
   "dependencies": {
-    "@actions/core": "^1.2.5",
+    "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
     "@vercel/ncc": "^0.24.1",
     "handlebars": "^4.7.6",
