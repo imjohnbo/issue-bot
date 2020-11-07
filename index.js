@@ -136,6 +136,7 @@ const getTemplateFromFile = async (templateFilePath) => {
 async function run () {
   try {
     const assignees = core.getInput('assignees');
+    const rotateAssignees = core.getInput('rotate-assignees');
     const title = core.getInput('title');
     let body = core.getInput('body');
     const labels = core.getInput('labels');
@@ -172,7 +173,7 @@ async function run () {
     metadata.assignees = metadata.assignees.split(',').map(s => s.trim()); // 'user1, user2' --> ['user1', 'user2']
     metadata.labels = metadata.labels.split(',').map(s => s.trim()); // 'label1, label2' --> ['label1', 'label2']
 
-    // GraphQL query to get latest matching open issue if it exists
+    // GraphQL query to get latest matching open issue if it exists with assignee
     const latestIssueQuery = `{
       resource(url: "${repo}") {
         ... on Repository {
@@ -180,6 +181,11 @@ async function run () {
             nodes {
               number
               id
+              assignees (first: 1) {
+                nodes {
+                  login
+                }
+              }
             }
           }
         }
@@ -187,15 +193,27 @@ async function run () {
     }`;
 
     // Run the query, save the number (ex. 79) and GraphQL id (ex. MDU6SXMzbWU0ODAxNzI0NDA=)
-    const {
-      number: previousIssueNumber,
-      id: previousIssueId
-    } = (await octokit.graphql(latestIssueQuery)).resource.issues.nodes[0] || {};
+    const latestIssueResponse = (await octokit.graphql(latestIssueQuery)).resource.issues.nodes[0] || {};
+    const previousIssueNumber = latestIssueQuery.number
+    const previousId = latestIssueQuery.id
+    const currentAssignee = latestIssueQuery.assignees.nodes[0].login
 
     core.debug(`Previous issue number: ${previousIssueNumber}`);
+    core.debug(`Previous issue currentAssignee: ${currentAssignee}`);
 
     // Render body with previousIssueNumber
     body = Handlebars.compile(body)({ previousIssueNumber });
+
+    // Rotate assignee to next in list?
+    if (rotateAssignees) {
+      let index = metadata.assignees.indexOf();
+      const length = metadata.assignees.length();
+      if (length - 1 === index) {
+        index = 0;
+      } else {
+        index++;
+      }
+    }
 
     // Create a new issue
     const { data: { number: newIssueNumber } } = await octokit.issues.create({
