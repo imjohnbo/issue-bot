@@ -204,11 +204,11 @@ async function run () {
 
     core.debug(`Latest issue response:\n\n${JSON.stringify(latestIssueResponse)}\n\n`)
 
-    const previousIssueNumber = latestIssueQuery.number
-    const previousId = latestIssueQuery.id
+    const previousIssueNumber = latestIssueResponse.number
+    const previousId = latestIssueResponse.id
     let currentAssignee = ''
-    if (latestIssueQuery.assignees.nodes && latestIssueQuery.assignees.nodes.length() > 0) {
-      currentAssignee = latestIssueQuery.assignees.nodes[0].login
+    if (latestIssueResponse.assignees.nodes && latestIssueResponse.assignees.nodes.length() > 0) {
+      currentAssignee = latestIssueResponse.assignees.nodes[0].login
     }
 
     core.debug(`Previous issue number: ${previousIssueNumber}`);
