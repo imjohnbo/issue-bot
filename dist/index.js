@@ -203,7 +203,10 @@ async function run () {
     const latestIssueResponse = (await octokit.graphql(latestIssueQuery)).resource.issues.nodes[0] || {};
     const previousIssueNumber = latestIssueQuery.number
     const previousId = latestIssueQuery.id
-    const currentAssignee = latestIssueQuery.assignees.nodes[0].login
+    let currentAssignee = ''
+    if (latestIssueQuery.assignees.nodes.length() > 0) {
+      currentAssignee = latestIssueQuery.assignees.nodes[0].login
+    }
 
     core.debug(`Previous issue number: ${previousIssueNumber}`);
     core.debug(`Previous issue currentAssignee: ${currentAssignee}`);
@@ -212,7 +215,7 @@ async function run () {
     body = Handlebars.compile(body)({ previousIssueNumber });
 
     // Rotate assignee to next in list?
-    if (rotateAssignees) {
+    if (rotateAssignees && currentAssignee !== '') {
       let index = metadata.assignees.indexOf();
       const length = metadata.assignees.length();
       // If last assignee in array
