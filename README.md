@@ -116,7 +116,7 @@ jobs:
 - `labels`: Comma delimited list of issue labels. Required value either as input or in YAML header of issue template.
 - `title`: Issue title. Required value either as input or in YAML header of issue template.
 - `assignees`: Comma delimited list of issue assignees.
-- `rotate-assignees`: 
+- `rotate-assignees`: Whether to round robin the provided assignees (i.e. for first responder duties)
 - `body`: Issue body.
 - `pinned`: Whether to [pins the issue](https://help.github.com/en/github/managing-your-work-on-github/pinning-an-issue-to-your-repository) and unpin the previous one.
 - `close-previous`: Whether to close the most recent previous issue with a matching label.

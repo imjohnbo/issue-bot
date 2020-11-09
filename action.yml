@@ -19,7 +19,7 @@ inputs:
     default: ''
     required: false
   rotate-assignees:
-    description: 'Whether to round robin the provided assisgness (i.e. for first responder duties)'
+    description: 'Whether to round robin the provided assignees (i.e. for first responder duties)'
     default: 'false'
     required: false
   body:
