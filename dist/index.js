@@ -206,8 +206,8 @@ async function run () {
 
     const previousIssueNumber = latestIssueResponse.number
     const previousId = latestIssueResponse.id
-    let currentAssignee = ''
-    if (latestIssueResponse.assignees.nodes && latestIssueResponse.assignees.nodes.length() > 0) {
+    let currentAssignee = null
+    if (latestIssueResponse.assignees && latestIssueResponse.assignees.nodes.length() > 0) {
       currentAssignee = latestIssueResponse.assignees.nodes[0].login
     }
 
@@ -218,8 +218,8 @@ async function run () {
     body = Handlebars.compile(body)({ previousIssueNumber });
 
     // Rotate assignee to next in list?
-    if (rotateAssignees && currentAssignee !== '') {
-      let index = metadata.assignees.indexOf();
+    if (rotateAssignees) {
+      let index = metadata.assignees.indexOf(currentAssignee);
       const length = metadata.assignees.length();
       // If last assignee in array
       if (length - 1 <= index) {
