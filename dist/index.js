@@ -215,11 +215,15 @@ async function run () {
     if (rotateAssignees) {
       let index = metadata.assignees.indexOf();
       const length = metadata.assignees.length();
-      if (length - 1 === index) {
+      // If last assignee in array
+      if (length - 1 <= index) {
         index = 0;
       } else {
         index++;
       }
+
+      // Reset array of assignees to single assignee, next in list
+      metadata.assignees = [`'${metadata.assignees[index]}'`]
     }
 
     // Create a new issue
