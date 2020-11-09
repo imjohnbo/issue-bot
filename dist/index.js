@@ -207,7 +207,7 @@ async function run () {
     const previousIssueNumber = latestIssueResponse.number
     const previousId = latestIssueResponse.id
     let currentAssignee = null
-    if (latestIssueResponse.assignees && latestIssueResponse.assignees.nodes.length() > 0) {
+    if (latestIssueResponse.assignees && latestIssueResponse.assignees.nodes.length > 0) {
       currentAssignee = latestIssueResponse.assignees.nodes[0].login
     }
 
