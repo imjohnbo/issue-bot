@@ -229,7 +229,7 @@ async function run () {
       }
 
       // Reset array of assignees to single assignee, next in list
-      metadata.assignees = [`'${metadata.assignees[index]}'`]
+      metadata.assignees = [metadata.assignees[index]]
     }
 
     core.debug(`Metadata.assignees: ${metadata.assignees}`)
