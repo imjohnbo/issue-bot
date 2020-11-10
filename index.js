@@ -173,7 +173,7 @@ async function run () {
     metadata.assignees = metadata.assignees.split(',').map(s => s.trim()); // 'user1, user2' --> ['user1', 'user2']
     metadata.labels = metadata.labels.split(',').map(s => s.trim()); // 'label1, label2' --> ['label1', 'label2']
 
-    // GraphQL query to get latest matching open issue if it exists with assignee
+    // GraphQL query to get latest matching open issue, if it exists, along with first assignee
     const latestIssueQuery = `{
       resource(url: "${repo}") {
         ... on Repository {
