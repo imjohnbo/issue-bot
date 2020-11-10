@@ -209,14 +209,7 @@ async function run () {
 
     // Rotate assignee to next in list?
     if (rotateAssignees) {
-      let index = metadata.assignees.indexOf(currentAssignee);
-      const length = metadata.assignees.length;
-      // If last assignee in array
-      if (length - 1 <= index) {
-        index = 0;
-      } else {
-        index++;
-      }
+  let index = (metadata.assignees.indexOf(currentAssignee) + 1) % metadata.assignees.length;
 
       // Reset array of assignees to single assignee, next in list
       metadata.assignees = [metadata.assignees[index]]
