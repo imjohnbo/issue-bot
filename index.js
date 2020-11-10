@@ -193,14 +193,13 @@ async function run () {
     }`;
 
     // Run the query, save the number (ex. 79) and GraphQL id (ex. MDU6SXMzbWU0ODAxNzI0NDA=)
-    const latestIssueResponse = (await octokit.graphql(latestIssueQuery)).resource.issues.nodes[0] || {};
+    const {
+        number: previousIssueNumber,
+        id: previousIssueId,
+        assignees:  { nodes: previousAssignees }
+    } = (await octokit.graphql(latestIssueQuery)).resource.issues.nodes[0] || {};
 
-    const previousIssueNumber = latestIssueResponse.number
-    const previousIssueId = latestIssueResponse.id
-    let currentAssignee = null
-    if (latestIssueResponse.assignees && latestIssueResponse.assignees.nodes.length > 0) {
-      currentAssignee = latestIssueResponse.assignees.nodes[0].login
-    }
+    let currentAssignee = previousAssignees.length ? previousAssignees[0].login : undefined;
 
     core.debug(`Previous issue number: ${previousIssueNumber}`);
     core.debug(`Previous issue currentAssignee: ${currentAssignee}`);
