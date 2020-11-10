@@ -143,6 +143,7 @@ const getTemplateFromFile = async (templateFilePath) => {
 async function run () {
   try {
     const assignees = core.getInput('assignees');
+    const rotateAssignees = core.getInput('rotate-assignees') === 'true';
     const title = core.getInput('title');
     let body = core.getInput('body');
     const labels = core.getInput('labels');
@@ -179,7 +180,7 @@ async function run () {
     metadata.assignees = metadata.assignees.split(',').map(s => s.trim()); // 'user1, user2' --> ['user1', 'user2']
     metadata.labels = metadata.labels.split(',').map(s => s.trim()); // 'label1, label2' --> ['label1', 'label2']
 
-    // GraphQL query to get latest matching open issue if it exists
+    // GraphQL query to get latest matching open issue if it exists with assignee
     const latestIssueQuery = `{
       resource(url: "${repo}") {
         ... on Repository {
@@ -187,6 +188,11 @@ async function run () {
             nodes {
               number
               id
+              assignees (first: 1) {
+                nodes {
+                  login
+                }
+              }
             }
           }
         }
@@ -194,15 +200,35 @@ async function run () {
     }`;
 
     // Run the query, save the number (ex. 79) and GraphQL id (ex. MDU6SXMzbWU0ODAxNzI0NDA=)
-    const {
-      number: previousIssueNumber,
-      id: previousIssueId
-    } = (await octokit.graphql(latestIssueQuery)).resource.issues.nodes[0] || {};
+    const latestIssueResponse = (await octokit.graphql(latestIssueQuery)).resource.issues.nodes[0] || {};
+
+    const previousIssueNumber = latestIssueResponse.number
+    const previousIssueId = latestIssueResponse.id
+    let currentAssignee = null
+    if (latestIssueResponse.assignees && latestIssueResponse.assignees.nodes.length > 0) {
+      currentAssignee = latestIssueResponse.assignees.nodes[0].login
+    }
 
     core.debug(`Previous issue number: ${previousIssueNumber}`);
+    core.debug(`Previous issue currentAssignee: ${currentAssignee}`);
 
     // Render body with previousIssueNumber
     body = Handlebars.compile(body)({ previousIssueNumber });
+
+    // Rotate assignee to next in list?
+    if (rotateAssignees) {
+      let index = metadata.assignees.indexOf(currentAssignee);
+      const length = metadata.assignees.length;
+      // If last assignee in array
+      if (length - 1 <= index) {
+        index = 0;
+      } else {
+        index++;
+      }
+
+      // Reset array of assignees to single assignee, next in list
+      metadata.assignees = [metadata.assignees[index]]
+    }
 
     // Create a new issue
     const { data: { number: newIssueNumber } } = await octokit.issues.create({
@@ -285,6 +311,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const os = __importStar(__webpack_require__(2087));
+const utils_1 = __webpack_require__(5278);
 /**
  * Commands
  *
@@ -338,28 +365,14 @@ class Command {
         return cmdStr;
     }
 }
-/**
- * Sanitizes an input into a string so it can be passed into issueCommand safely
- * @param input input to sanitize into a string
- */
-function toCommandValue(input) {
-    if (input === null || input === undefined) {
-        return '';
-    }
-    else if (typeof input === 'string' || input instanceof String) {
-        return input;
-    }
-    return JSON.stringify(input);
-}
-exports.toCommandValue = toCommandValue;
 function escapeData(s) {
-    return toCommandValue(s)
+    return utils_1.toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A');
 }
 function escapeProperty(s) {
-    return toCommandValue(s)
+    return utils_1.toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A')
@@ -393,6 +406,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const command_1 = __webpack_require__(7351);
+const file_command_1 = __webpack_require__(717);
+const utils_1 = __webpack_require__(5278);
 const os = __importStar(__webpack_require__(2087));
 const path = __importStar(__webpack_require__(5622));
 /**
@@ -419,9 +434,17 @@ var ExitCode;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function exportVariable(name, val) {
-    const convertedVal = command_1.toCommandValue(val);
+    const convertedVal = utils_1.toCommandValue(val);
     process.env[name] = convertedVal;
-    command_1.issueCommand('set-env', { name }, convertedVal);
+    const filePath = process.env['GITHUB_ENV'] || '';
+    if (filePath) {
+        const delimiter = '_GitHubActionsFileCommandDelimeter_';
+        const commandValue = `${name}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`;
+        file_command_1.issueCommand('ENV', commandValue);
+    }
+    else {
+        command_1.issueCommand('set-env', { name }, convertedVal);
+    }
 }
 exports.exportVariable = exportVariable;
 /**
@@ -437,7 +460,13 @@ exports.setSecret = setSecret;
  * @param inputPath
  */
 function addPath(inputPath) {
-    command_1.issueCommand('add-path', {}, inputPath);
+    const filePath = process.env['GITHUB_PATH'] || '';
+    if (filePath) {
+        file_command_1.issueCommand('PATH', inputPath);
+    }
+    else {
+        command_1.issueCommand('add-path', {}, inputPath);
+    }
     process.env['PATH'] = `${inputPath}${path.delimiter}${process.env['PATH']}`;
 }
 exports.addPath = addPath;
@@ -596,6 +625,68 @@ function getState(name) {
 }
 exports.getState = getState;
 //# sourceMappingURL=core.js.map
+
+/***/ }),
+
+/***/ 717:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+// For internal use, subject to change.
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+// We use any as a valid input type
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const fs = __importStar(__webpack_require__(5747));
+const os = __importStar(__webpack_require__(2087));
+const utils_1 = __webpack_require__(5278);
+function issueCommand(command, message) {
+    const filePath = process.env[`GITHUB_${command}`];
+    if (!filePath) {
+        throw new Error(`Unable to find environment variable for file command ${command}`);
+    }
+    if (!fs.existsSync(filePath)) {
+        throw new Error(`Missing file at path: ${filePath}`);
+    }
+    fs.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
+        encoding: 'utf8'
+    });
+}
+exports.issueCommand = issueCommand;
+//# sourceMappingURL=file-command.js.map
+
+/***/ }),
+
+/***/ 5278:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+// We use any as a valid input type
+/* eslint-disable @typescript-eslint/no-explicit-any */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+/**
+ * Sanitizes an input into a string so it can be passed into issueCommand safely
+ * @param input input to sanitize into a string
+ */
+function toCommandValue(input) {
+    if (input === null || input === undefined) {
+        return '';
+    }
+    else if (typeof input === 'string' || input instanceof String) {
+        return input;
+    }
+    return JSON.stringify(input);
+}
+exports.toCommandValue = toCommandValue;
+//# sourceMappingURL=utils.js.map
 
 /***/ }),
 

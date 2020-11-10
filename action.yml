@@ -18,6 +18,10 @@ inputs:
     description: 'Comma delimited list of issue assignees'
     default: ''
     required: false
+  rotate-assignees:
+    description: 'Whether to round robin the provided assignees (i.e. for first responder duties)'
+    default: 'false'
+    required: false
   body:
     description: 'Issue body'
     default: ''
