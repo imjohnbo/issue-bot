@@ -202,8 +202,6 @@ async function run () {
     // Run the query, save the number (ex. 79) and GraphQL id (ex. MDU6SXMzbWU0ODAxNzI0NDA=)
     const latestIssueResponse = (await octokit.graphql(latestIssueQuery)).resource.issues.nodes[0] || {};
 
-    core.debug(`Latest issue response:\n\n${JSON.stringify(latestIssueResponse)}\n\n`)
-
     const previousIssueNumber = latestIssueResponse.number
     const previousIssueId = latestIssueResponse.id
     let currentAssignee = null
