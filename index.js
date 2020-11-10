@@ -136,7 +136,7 @@ const getTemplateFromFile = async (templateFilePath) => {
 async function run () {
   try {
     const assignees = core.getInput('assignees');
-    const rotateAssignees = core.getInput('rotate-assignees');
+    const rotateAssignees = core.getInput('rotate-assignees') === 'true';
     const title = core.getInput('title');
     let body = core.getInput('body');
     const labels = core.getInput('labels');
@@ -224,8 +224,6 @@ async function run () {
       // Reset array of assignees to single assignee, next in list
       metadata.assignees = [metadata.assignees[index]]
     }
-
-    core.debug(`Metadata.assignees: ${metadata.assignees}`)
 
     // Create a new issue
     const { data: { number: newIssueNumber } } = await octokit.issues.create({
