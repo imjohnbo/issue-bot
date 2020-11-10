@@ -198,7 +198,7 @@ async function run () {
     core.debug(`Latest issue response:\n\n${JSON.stringify(latestIssueResponse)}\n\n`)
 
     const previousIssueNumber = latestIssueResponse.number
-    const previousId = latestIssueResponse.id
+    const previousIssueId = latestIssueResponse.id
     let currentAssignee = null
     if (latestIssueResponse.assignees && latestIssueResponse.assignees.nodes.length > 0) {
       currentAssignee = latestIssueResponse.assignees.nodes[0].login
