@@ -232,6 +232,8 @@ async function run () {
       metadata.assignees = [`'${metadata.assignees[index]}'`]
     }
 
+    core.debug(`Metadata.assignees: ${metadata.assignees}`)
+
     // Create a new issue
     const { data: { number: newIssueNumber } } = await octokit.issues.create({
       ...github.context.repo,
