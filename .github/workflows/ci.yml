@@ -22,6 +22,7 @@ jobs:
         npm run lint
 
     - name: Commit
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
       run: |
         git config --global user.name "GitHub Actions"
         git add dist/
