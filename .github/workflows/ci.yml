@@ -11,9 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    
     - uses: actions/setup-node@v1
+    
     - name: npm install, build, and test
       run: |
         npm install
-        npm run build --if-present
+        npm run build
         npm run lint
+
+    - name: Commit
+      run: |
+        git config --global user.name "GitHub Actions"
+        git add dist/
+        git commit -m "chore: Update dist" || echo "No changes to commit"
+        git push origin HEAD:master
