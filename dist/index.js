@@ -180,7 +180,7 @@ async function run () {
     metadata.assignees = metadata.assignees.split(',').map(s => s.trim()); // 'user1, user2' --> ['user1', 'user2']
     metadata.labels = metadata.labels.split(',').map(s => s.trim()); // 'label1, label2' --> ['label1', 'label2']
 
-    // GraphQL query to get latest matching open issue if it exists with assignee
+    // GraphQL query to get latest matching open issue, if it exists, along with first assignee
     const latestIssueQuery = `{
       resource(url: "${repo}") {
         ... on Repository {
@@ -200,14 +200,13 @@ async function run () {
     }`;
 
     // Run the query, save the number (ex. 79) and GraphQL id (ex. MDU6SXMzbWU0ODAxNzI0NDA=)
-    const latestIssueResponse = (await octokit.graphql(latestIssueQuery)).resource.issues.nodes[0] || {};
+    const {
+      number: previousIssueNumber,
+      id: previousIssueId,
+      assignees: { nodes: previousAssignees }
+    } = (await octokit.graphql(latestIssueQuery)).resource.issues.nodes[0] || {};
 
-    const previousIssueNumber = latestIssueResponse.number
-    const previousIssueId = latestIssueResponse.id
-    let currentAssignee = null
-    if (latestIssueResponse.assignees && latestIssueResponse.assignees.nodes.length > 0) {
-      currentAssignee = latestIssueResponse.assignees.nodes[0].login
-    }
+    const currentAssignee = previousAssignees.length ? previousAssignees[0].login : undefined;
 
     core.debug(`Previous issue number: ${previousIssueNumber}`);
     core.debug(`Previous issue currentAssignee: ${currentAssignee}`);
@@ -217,17 +216,10 @@ async function run () {
 
     // Rotate assignee to next in list?
     if (rotateAssignees) {
-      let index = metadata.assignees.indexOf(currentAssignee);
-      const length = metadata.assignees.length;
-      // If last assignee in array
-      if (length - 1 <= index) {
-        index = 0;
-      } else {
-        index++;
-      }
+      const index = (metadata.assignees.indexOf(currentAssignee) + 1) % metadata.assignees.length;
 
       // Reset array of assignees to single assignee, next in list
-      metadata.assignees = [metadata.assignees[index]]
+      metadata.assignees = [metadata.assignees[index]];
     }
 
     // Create a new issue
@@ -18621,7 +18613,7 @@ module.exports = eval("require")("encoding");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("assert");
+module.exports = require("assert");;
 
 /***/ }),
 
@@ -18629,7 +18621,7 @@ module.exports = require("assert");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("events");
+module.exports = require("events");;
 
 /***/ }),
 
@@ -18637,7 +18629,7 @@ module.exports = require("events");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("fs");
+module.exports = require("fs");;
 
 /***/ }),
 
@@ -18645,7 +18637,7 @@ module.exports = require("fs");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("http");
+module.exports = require("http");;
 
 /***/ }),
 
@@ -18653,7 +18645,7 @@ module.exports = require("http");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("https");
+module.exports = require("https");;
 
 /***/ }),
 
@@ -18661,7 +18653,7 @@ module.exports = require("https");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("net");
+module.exports = require("net");;
 
 /***/ }),
 
@@ -18669,7 +18661,7 @@ module.exports = require("net");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("os");
+module.exports = require("os");;
 
 /***/ }),
 
@@ -18677,7 +18669,7 @@ module.exports = require("os");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("path");
+module.exports = require("path");;
 
 /***/ }),
 
@@ -18685,7 +18677,7 @@ module.exports = require("path");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("stream");
+module.exports = require("stream");;
 
 /***/ }),
 
@@ -18693,7 +18685,7 @@ module.exports = require("stream");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("tls");
+module.exports = require("tls");;
 
 /***/ }),
 
@@ -18701,7 +18693,7 @@ module.exports = require("tls");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("url");
+module.exports = require("url");;
 
 /***/ }),
 
@@ -18709,7 +18701,7 @@ module.exports = require("url");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("util");
+module.exports = require("util");;
 
 /***/ }),
 
@@ -18717,7 +18709,7 @@ module.exports = require("util");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("zlib");
+module.exports = require("zlib");;
 
 /***/ })
 

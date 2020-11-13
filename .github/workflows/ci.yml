@@ -3,6 +3,7 @@ on:
     branches:         # array of glob patterns matching against refs/heads. Optional; defaults to all
     - master          # triggers on pushes that contain changes in master
     - feature/*
+  pull_request:
 
 name: My Workflow
 
@@ -11,9 +12,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+
     - uses: actions/setup-node@v1
+    
     - name: npm install, build, and test
       run: |
         npm install
-        npm run build --if-present
+        npm run build
         npm run lint
+
+    - name: Commit
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+      run: |
+        git config --global user.name "GitHub Actions"
+        git add dist/
+        git commit -m "chore: Update dist" || echo "No changes to commit"
+        git push origin HEAD:master

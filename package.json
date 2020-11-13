@@ -8,12 +8,12 @@
   },
   "devDependencies": {
     "husky": "^4.3.0",
-    "semistandard": "^14.2.3"
+    "semistandard": "^16.0.0"
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
-    "@vercel/ncc": "^0.24.1",
+    "@vercel/ncc": "^0.25.1",
     "handlebars": "^4.7.6",
     "js-yaml": "^3.14.0"
   },

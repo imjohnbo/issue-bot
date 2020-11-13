@@ -194,12 +194,12 @@ async function run () {
 
     // Run the query, save the number (ex. 79) and GraphQL id (ex. MDU6SXMzbWU0ODAxNzI0NDA=)
     const {
-        number: previousIssueNumber,
-        id: previousIssueId,
-        assignees:  { nodes: previousAssignees }
+      number: previousIssueNumber,
+      id: previousIssueId,
+      assignees: { nodes: previousAssignees }
     } = (await octokit.graphql(latestIssueQuery)).resource.issues.nodes[0] || {};
 
-    let currentAssignee = previousAssignees.length ? previousAssignees[0].login : undefined;
+    const currentAssignee = previousAssignees.length ? previousAssignees[0].login : undefined;
 
     core.debug(`Previous issue number: ${previousIssueNumber}`);
     core.debug(`Previous issue currentAssignee: ${currentAssignee}`);
@@ -209,10 +209,10 @@ async function run () {
 
     // Rotate assignee to next in list?
     if (rotateAssignees) {
-  let index = (metadata.assignees.indexOf(currentAssignee) + 1) % metadata.assignees.length;
+      const index = (metadata.assignees.indexOf(currentAssignee) + 1) % metadata.assignees.length;
 
       // Reset array of assignees to single assignee, next in list
-      metadata.assignees = [metadata.assignees[index]]
+      metadata.assignees = [metadata.assignees[index]];
     }
 
     // Create a new issue
