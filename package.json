@@ -1,6 +1,6 @@
 {
   "name": "issue-bot",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest",
     "build": "ncc build index.js",
