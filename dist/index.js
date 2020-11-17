@@ -207,7 +207,7 @@ async function run () {
     } = (await octokit.graphql(latestIssueQuery)).resource.issues.nodes[0] || {};
 
     let currentAssignee;
-    
+
     if (previousIssueNumber >= 0) {
       currentAssignee = previousAssignees.nodes.length ? previousAssignees.nodes[0].login : undefined;
     }
