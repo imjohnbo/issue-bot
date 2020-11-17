@@ -203,10 +203,14 @@ async function run () {
     const {
       number: previousIssueNumber,
       id: previousIssueId,
-      assignees: { nodes: previousAssignees }
+      assignees: previousAssignees
     } = (await octokit.graphql(latestIssueQuery)).resource.issues.nodes[0] || {};
 
-    const currentAssignee = previousAssignees.length ? previousAssignees[0].login : undefined;
+    let currentAssignee;
+    
+    if (previousIssueNumber >= 0) {
+      currentAssignee = previousAssignees.nodes.length ? previousAssignees.nodes[0].login : undefined;
+    }
 
     core.debug(`Previous issue number: ${previousIssueNumber}`);
     core.debug(`Previous issue currentAssignee: ${currentAssignee}`);
