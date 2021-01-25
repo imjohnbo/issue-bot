@@ -208,8 +208,8 @@ async function run () {
     core.debug(`Previous issue number: ${previousIssueNumber}`);
     core.debug(`Previous issue currentAssignee: ${currentAssignee}`);
 
-    // Render body with previousIssueNumber
-    body = Handlebars.compile(body)({ previousIssueNumber });
+    // Render body with previousIssueNumber, and assignees
+    body = Handlebars.compile(body)({ previousIssueNumber, assignees: metadata.assignees });
 
     // Rotate assignee to next in list?
     if (rotateAssignees) {

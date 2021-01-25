@@ -137,6 +137,7 @@ jobs:
 
 The issue body is treated as a [Handlebars](https://handlebarsjs.com) template, with support for template variables:
 
+- `assignees`: The array of issue assignees.
 - `previousIssueNumber`: The previous issue number in the series.
 
 ## Contributing
