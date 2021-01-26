@@ -208,9 +208,6 @@ async function run () {
     core.debug(`Previous issue number: ${previousIssueNumber}`);
     core.debug(`Previous issue currentAssignee: ${currentAssignee}`);
 
-    // Render body with previousIssueNumber
-    body = Handlebars.compile(body)({ previousIssueNumber });
-
     // Rotate assignee to next in list?
     if (rotateAssignees) {
       const index = (metadata.assignees.indexOf(currentAssignee) + 1) % metadata.assignees.length;
@@ -218,6 +215,9 @@ async function run () {
       // Reset array of assignees to single assignee, next in list
       metadata.assignees = [metadata.assignees[index]];
     }
+
+    // Render body with previousIssueNumber, and assignees
+    body = Handlebars.compile(body)({ previousIssueNumber, assignees: metadata.assignees });
 
     // Create a new issue
     const { data: { number: newIssueNumber } } = await octokit.issues.create({
