@@ -220,14 +220,14 @@ async function run() {
 
     // Overwrite with old body
     if (+previousIssueNumber >= 0 && takeOver) {
-      core.setOutput("take over", 'take over run');
+      core.setOutput("take over 1", 'take over run');
       body = "TEST desuyo"
     }
 
     // Render body with previousIssueNumber, and assignees
     body = Handlebars.compile(body)({ previousIssueNumber, assignees: metadata.assignees });
 
-    core.setOutput("take over", 'test');
+    core.setOutput("take over 2", 'test');
     console.log(`Hello test!`);
 
     // Create a new issue
