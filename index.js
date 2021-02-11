@@ -217,14 +217,18 @@ async function run() {
       metadata.assignees = [metadata.assignees[index]];
     }
 
-    // Render body with previousIssueNumber, and assignees
-    body = Handlebars.compile(body)({ previousIssueNumber, assignees: metadata.assignees });
 
     // Overwrite with old body
     if (+previousIssueNumber >= 0 && takeOver) {
       core.setOutput("take over", 'take over run');
       body = "TEST desuyo"
     }
+
+    // Render body with previousIssueNumber, and assignees
+    body = Handlebars.compile(body)({ previousIssueNumber, assignees: metadata.assignees });
+
+    core.setOutput("take over", 'test');
+    console.log(`Hello test!`);
 
     // Create a new issue
     const { data: { number: newIssueNumber } } = await octokit.issues.create({
