@@ -133,7 +133,7 @@ const getTemplateFromFile = async (templateFilePath) => {
   };
 };
 
-async function run () {
+async function run() {
   try {
     const assignees = core.getInput('assignees');
     const rotateAssignees = core.getInput('rotate-assignees') === 'true';
@@ -144,6 +144,7 @@ async function run () {
     const closePrevious = core.getInput('close-previous') === 'true';
     const templateFile = core.getInput('template');
     const linkedComments = core.getInput('linked-comments') === 'true';
+    const takeOver = core.getInput('take-over-old-issue') === 'true';
     let template = '';
     let metadata = {};
 
@@ -218,6 +219,11 @@ async function run () {
 
     // Render body with previousIssueNumber, and assignees
     body = Handlebars.compile(body)({ previousIssueNumber, assignees: metadata.assignees });
+
+    // Overwrite with old body
+    if (+previousIssueNumber >= 0 && takeOver) {
+      body = "TEST desuyo"
+    }
 
     // Create a new issue
     const { data: { number: newIssueNumber } } = await octokit.issues.create({

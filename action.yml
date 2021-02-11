@@ -44,6 +44,10 @@ inputs:
     description: 'Whether to comment links like "Previously: #345" and "Next: #346"'
     default: 'true'
     required: false
+  take-over-old-issue:
+    description: 'Take over an old issue'
+    default: 'false'
+    required: false
 outputs:
   issue-number:
     description: 'The issue number of the created issue'
