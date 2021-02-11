@@ -222,6 +222,7 @@ async function run() {
 
     // Overwrite with old body
     if (+previousIssueNumber >= 0 && takeOver) {
+      core.setOutput("take over", 'take over run');
       body = "TEST desuyo"
     }
 
