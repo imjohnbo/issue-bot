@@ -62,7 +62,7 @@ inputs:
       Boolean whether to write issue comments linking this issue and previous issue matching ALL of the provided "lables",
       e.g. "Previously: #345" and "Next: #346".
       Requires "labels".
-    default: 'true'
+    default: 'false'
     required: false
 
   rotate-assignees:
