@@ -46,7 +46,6 @@ try {
   }
 
   (0,_issue_bot__WEBPACK_IMPORTED_MODULE_0__/* .run */ .KH)(inputs);
-
 } catch (error) {
   core.setFailed(error);
 }
@@ -67,7 +66,7 @@ const octokit = getOctokit(token);
 
 // {key1: '', key2: 'some string', key3: undefined} => {key2: 'some string'}
 const removeEmptyProps = (obj) => {
-  for (let key in obj) {
+  for (const key in obj) {
     if (obj[key] === '' || typeof obj[key] === 'undefined') {
       delete obj[key];
     }
@@ -139,13 +138,13 @@ const isPinned = async (issueId) => {
       accept: 'application/vnd.github.elektra-preview+json'
     }
   });
-  
+
   core.debug(`isPinned data: ${JSON.stringify(data)}`);
 
   if (!data.resource) {
     return false;
   }
-  
+
   const pinnedIssues = data.resource.pinnedIssues.nodes || [];
   return pinnedIssues.findIndex(pinnedIssue => pinnedIssue.issue.id === issueId) >= 0;
 };
@@ -185,7 +184,7 @@ const pin = async (issueId) => {
         }
       }
     }`;
-    //TODO check if 3 issues are already pinned
+    // TODO check if 3 issues are already pinned
   return octokit.graphql({
     query: mutation,
     headers: {
@@ -252,19 +251,18 @@ const makeLinkedComments = async (newIssueNumber, previousIssueNumber) => {
 const getPreviousIssue = async (labels) => {
   core.info(`Finding previous issue with labels: ${JSON.stringify(labels)}...`);
 
-  let previousIssueNumber, previousIssueNodeId, previousAssignees = '';
+  let previousIssueNumber; let previousIssueNodeId; let previousAssignees = '';
 
   const data = (await octokit.issues.listForRepo({
     ...context.repo,
     labels
   })).data[0];
-  
+
   if (data) {
     previousIssueNumber = data.number;
     previousIssueNodeId = data.node_id;
     previousAssignees = data.assignees;
-  }
-  else {
+  } else {
     core.warning(`Couldn't find previous issue with labels: ${JSON.stringify(labels)}. Proceeding anyway.`);
   }
 
@@ -347,7 +345,7 @@ const run = async (inputs) => {
     if (needPreviousIssue(inputs.pinned, inputs.closePrevious, inputs.rotateAssignees, inputs.linkedComments)) {
       ({ previousIssueNumber, previousIssueNodeId, previousAssignees } = await getPreviousIssue(inputs.labels));
     }
-    
+
     // Rotate assignee to next in list
     if (issueExists(previousIssueNumber) && inputs.rotateAssignees) {
       previousAssignee = previousAssignees.length ? previousAssignees[0].login : undefined;
