@@ -16,18 +16,8 @@ const listToArray = (list, delimiter = ',') => {
   return list.split(delimiter).map(a => a.trim());
 };
 
-// {key1: '', key2: 'some string', key3: undefined} => {key2: 'some string'}
-const removeEmptyProps = (obj) => {
-  for (let key in obj) {
-    if (obj[key] === '' || typeof obj[key] === 'undefined') {
-      delete obj[key];
-    }
-  }
-  return obj;
-};
-
 try {
-  const inputs = removeEmptyProps({
+  const inputs = {
     title: core.getInput('title'),
     body: core.getInput('body'),
     labels: core.getInput('labels'),
@@ -39,7 +29,7 @@ try {
     closePrevious: core.getInput('close-previous') === 'true',
     rotateAssignees: core.getInput('rotate-assignees') === 'true',
     linkedComments: core.getInput('linked-comments') === 'true'
-  });
+  };
 
   const inputsValid = (0,_issue_bot__WEBPACK_IMPORTED_MODULE_0__/* .checkInputs */ .mC)(inputs);
 
@@ -74,6 +64,16 @@ const handlebars = __nccwpck_require__(7492);
 
 const token = process.env.GITHUB_TOKEN;
 const octokit = getOctokit(token);
+
+// {key1: '', key2: 'some string', key3: undefined} => {key2: 'some string'}
+const removeEmptyProps = (obj) => {
+  for (let key in obj) {
+    if (obj[key] === '' || typeof obj[key] === 'undefined') {
+      delete obj[key];
+    }
+  }
+  return obj;
+};
 
 const needPreviousIssue = (...conditions) => {
   return conditions.includes(true);
@@ -195,6 +195,9 @@ const pin = async (issueId) => {
 };
 
 const createNewIssue = async (options) => {
+  // Remove empty props in order to make valid API calls
+  options = removeEmptyProps(Object.assign({}, options));
+
   core.info(`Creating new issue with options: ${JSON.stringify(options)} and body: ${options.body}`);
 
   const { data: { number: newIssueNumber, id: newIssueId, node_id: newIssueNodeId } } = (await octokit.issues.create({
