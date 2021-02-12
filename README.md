@@ -113,15 +113,7 @@ jobs:
 
 ## Inputs
 
-- `labels`: Comma delimited list of issue labels. Required value either as input or in YAML header of issue template.
-- `title`: Issue title. Required value either as input or in YAML header of issue template.
-- `assignees`: Comma delimited list of issue assignees.
-- `rotate-assignees`: Whether to round robin the provided assignees (i.e. for first responder duties)
-- `body`: Issue body.
-- `pinned`: Whether to [pins the issue](https://help.github.com/en/github/managing-your-work-on-github/pinning-an-issue-to-your-repository) and unpin the previous one.
-- `close-previous`: Whether to close the most recent previous issue with a matching label.
-- `linked-comments`: Whether to link a previous issue in a series to the next issue via a comment on the previous issue.
-- `template`: Path to template used in issue, eg. `.github/ISSUE_TEMPLATE/bug_report.md`. Can also be a normal Markdown file with no YAML header (converted to `body`), in which case, `labels`, `title`, and `assignees` can be provided as inputs.
+See [action.yml](action.yml).
 
 ## Outputs
 
