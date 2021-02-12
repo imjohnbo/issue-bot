@@ -37,6 +37,7 @@ if (__nccwpck_require__.c[__nccwpck_require__.s] === module) {
     if (inputsValid) {
       inputs.labels = listToArray(inputs.labels);
       inputs.assignees = listToArray(inputs.assignees);
+      
       (0,_issue_bot__WEBPACK_IMPORTED_MODULE_0__/* .run */ .KH)(inputs);
     } else {
       throw new Error('Invalid inputs');
@@ -70,6 +71,8 @@ const issueExists = (previousIssueNumber) => {
 };
 
 const checkInputs = (inputs) => {
+  core.debug(`Checking inputs: ${JSON.stringify(inputs)}`);
+  
   let ok = true;
 
   ok = !!inputs.title;
@@ -280,6 +283,8 @@ const addIssueToMilestone = async (issueNumber, milestoneNumber) => {
  */
 const run = async (inputs) => {
   try {
+    core.debug(`Running with inputs: ${JSON.stringify(inputs)}`);
+
     let previousAssignee; let previousIssueNumber = -1; let previousIssueNodeId; let previousAssignees;
 
     if (needPreviousIssue(inputs.pinned, inputs.closePrevious, inputs.rotateAssignees, inputs.linkedComments)) {
