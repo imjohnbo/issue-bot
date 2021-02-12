@@ -247,17 +247,27 @@ const getPreviousIssue = async (labels) => {
   };
 };
 
-const addIssueToProjectColumn = async (issueId, projectId, columnName) => {
-  core.debug(`Adding issue id ${issueId} to project id ${projectId}, column name ${columnName}`);
+const addIssueToProjectColumn = async (issueId, projectNumber, columnName) => {
+  core.debug(`Adding issue id ${issueId} to project number ${projectNumber}, column name ${columnName}`);
+
+  const { data: projects } = await octokit.projects.listForRepo({
+    ...context.repo
+  });
+
+  const project = projects.find(project => project.number === projectNumber);
+
+  if (!project) {
+    throw new Error(`Project with number ${projectNumber} could not be found in this repository.`);
+  }
 
   const { data: columns } = await octokit.projects.listColumns({
-    project_id: projectId
+    project_id: project.id
   });
 
   const column = columns.find(column => column.name === columnName);
 
   if (!column) {
-    throw new Error(`Column with name ${columnName} could not be found in repository project with id ${projectId}.`);
+    throw new Error(`Column with name ${columnName} could not be found in repository project with id ${projectNumber}.`);
   }
 
   core.debug(`Column name ${columnName} maps to column id ${column.id}`);
