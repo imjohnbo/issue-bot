@@ -32,14 +32,20 @@ try {
 
   const inputsValid = (0,_issue_bot__WEBPACK_IMPORTED_MODULE_0__/* .checkInputs */ .mC)(inputs);
 
-  if (inputsValid) {
-    inputs.labels = listToArray(inputs.labels);
-    inputs.assignees = listToArray(inputs.assignees);
-
-    (0,_issue_bot__WEBPACK_IMPORTED_MODULE_0__/* .run */ .KH)(inputs);
-  } else {
+  if (!inputsValid) {
     throw new Error('Invalid inputs');
   }
+  
+  if (inputs.labels) {
+    inputs.labels = listToArray(inputs.labels);
+  }
+
+  if (inputs.assignees) {
+    inputs.assignees = listToArray(inputs.assignees);
+  }
+
+  (0,_issue_bot__WEBPACK_IMPORTED_MODULE_0__/* .run */ .KH)(inputs);
+
 } catch (error) {
   core.setFailed(error);
 }
