@@ -67,7 +67,7 @@ const issueExists = (previousIssueNumber) => {
 };
 
 const checkInputs = (inputs) => {
-  core.debug(`Checking inputs: ${JSON.stringify(inputs)}`);
+  core.info(`Checking inputs: ${JSON.stringify(inputs)}`);
 
   let ok = true;
 
@@ -90,18 +90,18 @@ const checkInputs = (inputs) => {
 };
 
 const getNextAssignee = (assignees, previousAssignee) => {
-  core.debug(`Getting next assignee from ${JSON.stringify(assignees)} with previous assignee ${previousAssignee}}`);
+  core.info(`Getting next assignee from ${JSON.stringify(assignees)} with previous assignee ${previousAssignee}}`);
 
   const index = (assignees.indexOf(previousAssignee) + 1) % assignees.length;
 
-  core.debug(`Next assignee: ${assignees[index]}`);
+  core.info(`Next assignee: ${assignees[index]}`);
 
   return [assignees[index]];
 };
 
 // Is issue with issueId already pinned to this repo?
 const isPinned = async (issueId) => {
-  core.debug(`Checking if issue ${issueId} is pinned.`);
+  core.info(`Checking if issue ${issueId} is pinned.`);
 
   const query = `{
     resource(url: "${context.repo}") {
@@ -122,6 +122,8 @@ const isPinned = async (issueId) => {
       accept: 'application/vnd.github.elektra-preview+json'
     }
   });
+  
+  core.debug(`isPinned data: ${JSON.stringify(data)}`);
 
   if (!data.resource) {
     return false;
@@ -137,7 +139,7 @@ const unpin = async (issueId) => {
     return;
   }
 
-  core.debug(`Unpinning ${issueId}...`);
+  core.info(`Unpinning ${issueId}...`);
 
   const mutation = `mutation {
     unpinIssue(input: {issueId: "${issueId}"}) {
@@ -157,7 +159,7 @@ const unpin = async (issueId) => {
 
 // Given a GraphQL issue id, pin the issue
 const pin = async (issueId) => {
-  core.debug(`Pinning ${issueId}...`);
+  core.info(`Pinning ${issueId}...`);
 
   const mutation = `mutation {
     pinIssue(input: {issueId: "${issueId}"}) {
@@ -166,6 +168,7 @@ const pin = async (issueId) => {
         }
       }
     }`;
+    //TODO check if 3 issues are already pinned
   return octokit.graphql({
     query: mutation,
     headers: {
@@ -175,7 +178,7 @@ const pin = async (issueId) => {
 };
 
 const createNewIssue = async (options) => {
-  core.debug(`Creating new issue with options: ${JSON.stringify(options)} and body: ${options.body}`);
+  core.info(`Creating new issue with options: ${JSON.stringify(options)} and body: ${options.body}`);
 
   const { data: { number: newIssueNumber, id: newIssueId, node_id: newIssueNodeId } } = (await octokit.issues.create({
     ...context.repo,
@@ -197,7 +200,7 @@ const createNewIssue = async (options) => {
 };
 
 const closeIssue = async (issueNumber) => {
-  core.debug(`Closing issue number ${issueNumber}...`);
+  core.info(`Closing issue number ${issueNumber}...`);
 
   return await octokit.issues.update({
     ...context.repo,
@@ -207,7 +210,7 @@ const closeIssue = async (issueNumber) => {
 };
 
 const makeLinkedComments = async (newIssueNumber, previousIssueNumber) => {
-  core.debug(`Making linked comments on new issue number ${newIssueNumber} and previous issue number ${previousIssueNumber}`);
+  core.info(`Making linked comments on new issue number ${newIssueNumber} and previous issue number ${previousIssueNumber}`);
 
   // Create comment on the new that points to the previous
   await octokit.issues.createComment({
@@ -227,18 +230,26 @@ const makeLinkedComments = async (newIssueNumber, previousIssueNumber) => {
 // Return previous issue matching both labels
 // @input labels: ['label1', 'label2']
 const getPreviousIssue = async (labels) => {
-  core.debug(`Finding previous issue with labels: ${JSON.stringify(labels)}...`);
+  core.info(`Finding previous issue with labels: ${JSON.stringify(labels)}...`);
+
+  let previousIssueNumber, previousIssueNodeId, previousAssignees = '';
 
   const data = (await octokit.issues.listForRepo({
     ...context.repo,
     labels
   })).data[0];
 
-  const previousIssueNumber = data.number;
-  const previousIssueNodeId = data.node_id;
-  const previousAssignees = data.assignees;
+  core.warning(`Couldn't find previous issue with labels: ${JSON.stringify(labels)}. Proceeding anyway.`);
+
+  if (data) {
+    previousIssueNumber = data.number;
+    previousIssueNodeId = data.node_id;
+    previousAssignees = data.assignees;
+  }
 
   core.debug(`Previous issue number: ${previousIssueNumber}`);
+  core.debug(`Previous issue node id: ${previousIssueNodeId}`);
+  core.debug(`Previous issue assignees: ${previousAssignees}`);
 
   return {
     previousIssueNumber: previousIssueNumber ? Number(previousIssueNumber) : undefined,
@@ -248,7 +259,7 @@ const getPreviousIssue = async (labels) => {
 };
 
 const addIssueToProjectColumn = async (issueId, projectNumber, columnName) => {
-  core.debug(`Adding issue id ${issueId} to project number ${projectNumber}, column name ${columnName}`);
+  core.info(`Adding issue id ${issueId} to project number ${projectNumber}, column name ${columnName}`);
 
   const { data: projects } = await octokit.projects.listForRepo({
     ...context.repo
@@ -266,7 +277,11 @@ const addIssueToProjectColumn = async (issueId, projectNumber, columnName) => {
     project_id: project.id
   });
 
+  core.debug(`Found columns for project id ${project.id}: ${JSON.stringify(columns)}`);
+
   const column = columns.find(column => column.name === columnName);
+
+  core.debug(`Found column matching column name ${columnName}: ${JSON.stringify(column)}`);
 
   if (!column) {
     throw new Error(`Column with name ${columnName} could not be found in repository project with id ${projectNumber}.`);
@@ -282,6 +297,8 @@ const addIssueToProjectColumn = async (issueId, projectNumber, columnName) => {
 };
 
 const addIssueToMilestone = async (issueNumber, milestoneNumber) => {
+  core.info(`Adding issue number ${issueNumber} to milestone number ${milestoneNumber}`);
+
   await octokit.issues.update({
     ...context.repo,
     issue_number: issueNumber,
@@ -296,20 +313,17 @@ const addIssueToMilestone = async (issueNumber, milestoneNumber) => {
  */
 const run = async (inputs) => {
   try {
-    core.debug(`Running with inputs: ${JSON.stringify(inputs)}`);
+    core.info(`Running with inputs: ${JSON.stringify(inputs)}`);
 
     let previousAssignee; let previousIssueNumber = -1; let previousIssueNodeId; let previousAssignees;
 
     if (needPreviousIssue(inputs.pinned, inputs.closePrevious, inputs.rotateAssignees, inputs.linkedComments)) {
       ({ previousIssueNumber, previousIssueNodeId, previousAssignees } = await getPreviousIssue(inputs.labels));
     }
-
-    if (issueExists(previousIssueNumber)) {
-      previousAssignee = previousAssignees.length ? previousAssignees[0].login : undefined;
-    }
-
+    
     // Rotate assignee to next in list
-    if (inputs.rotateAssignees) {
+    if (issueExists(previousIssueNumber) && inputs.rotateAssignees) {
+      previousAssignee = previousAssignees.length ? previousAssignees[0].login : undefined;
       inputs.assignees = getNextAssignee(inputs.assignees, previousAssignee);
     }
 
@@ -341,7 +355,7 @@ const run = async (inputs) => {
     }
 
     if (newIssueNumber) {
-      core.debug(`New issue number: ${newIssueNumber}`);
+      core.info(`New issue number: ${newIssueNumber}`);
       core.setOutput('issue-number', String(newIssueNumber));
     }
   } catch (error) {
