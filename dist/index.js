@@ -122,14 +122,17 @@ const isPinned = async (issueId) => {
       accept: 'application/vnd.github.elektra-preview+json'
     }
   });
+
+  if (!data.resource) {
+    return false;
+  }
+  
   const pinnedIssues = data.resource.pinnedIssues.nodes || [];
   return pinnedIssues.findIndex(pinnedIssue => pinnedIssue.issue.id === issueId) >= 0;
 };
 
 // Given a GraphQL issue id, unpin the issue
 const unpin = async (issueId) => {
-  core.debug(`Check if ${issueId} is already pinned...`);
-
   if (!(await isPinned(issueId))) {
     return;
   }
