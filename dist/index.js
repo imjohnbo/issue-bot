@@ -3,12 +3,11 @@ module.exports =
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 4822:
-/***/ ((module, __webpack_exports__, __nccwpck_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
 __nccwpck_require__.r(__webpack_exports__);
 /* harmony import */ var _issue_bot__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(4717);
-/* module decorator */ module = __nccwpck_require__.hmd(module);
 
 const core = __nccwpck_require__(2186);
 
@@ -16,35 +15,33 @@ const listToArray = (list, delimiter = ',') => {
   return list.split(delimiter).map(a => a.trim());
 };
 
-if (__nccwpck_require__.c[__nccwpck_require__.s] === module) {
-  try {
-    const inputs = {
-      title: core.getInput('title'),
-      body: core.getInput('body'),
-      labels: core.getInput('labels'),
-      assignees: core.getInput('assignees'),
-      project: core.getInput('project'),
-      column: core.getInput('column'),
-      milestone: core.getInput('milestone'),
-      pinned: core.getInput('pinned') === 'true',
-      closePrevious: core.getInput('close-previous') === 'true',
-      rotateAssignees: core.getInput('rotate-assignees') === 'true',
-      linkedComments: core.getInput('linked-comments') === 'true'
-    };
+try {
+  const inputs = {
+    title: core.getInput('title'),
+    body: core.getInput('body'),
+    labels: core.getInput('labels'),
+    assignees: core.getInput('assignees'),
+    project: core.getInput('project'),
+    column: core.getInput('column'),
+    milestone: core.getInput('milestone'),
+    pinned: core.getInput('pinned') === 'true',
+    closePrevious: core.getInput('close-previous') === 'true',
+    rotateAssignees: core.getInput('rotate-assignees') === 'true',
+    linkedComments: core.getInput('linked-comments') === 'true'
+  };
 
-    const inputsValid = (0,_issue_bot__WEBPACK_IMPORTED_MODULE_0__/* .checkInputs */ .mC)(inputs);
+  const inputsValid = (0,_issue_bot__WEBPACK_IMPORTED_MODULE_0__/* .checkInputs */ .mC)(inputs);
 
-    if (inputsValid) {
-      inputs.labels = listToArray(inputs.labels);
-      inputs.assignees = listToArray(inputs.assignees);
-      
-      (0,_issue_bot__WEBPACK_IMPORTED_MODULE_0__/* .run */ .KH)(inputs);
-    } else {
-      throw new Error('Invalid inputs');
-    }
-  } catch (error) {
-    core.setFailed(error);
+  if (inputsValid) {
+    inputs.labels = listToArray(inputs.labels);
+    inputs.assignees = listToArray(inputs.assignees);
+
+    (0,_issue_bot__WEBPACK_IMPORTED_MODULE_0__/* .run */ .KH)(inputs);
+  } else {
+    throw new Error('Invalid inputs');
   }
+} catch (error) {
+  core.setFailed(error);
 }
 
 
@@ -54,7 +51,6 @@ if (__nccwpck_require__.c[__nccwpck_require__.s] === module) {
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 var __webpack_unused_export__;
-// @ts-check
 const core = __nccwpck_require__(2186);
 const { context, getOctokit } = __nccwpck_require__(5438);
 const handlebars = __nccwpck_require__(7492);
@@ -72,7 +68,7 @@ const issueExists = (previousIssueNumber) => {
 
 const checkInputs = (inputs) => {
   core.debug(`Checking inputs: ${JSON.stringify(inputs)}`);
-  
+
   let ok = true;
 
   ok = !!inputs.title;
@@ -14624,8 +14620,8 @@ module.exports = require("zlib");;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			id: moduleId,
-/******/ 			loaded: false,
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
 /******/ 	
@@ -14638,32 +14634,11 @@ module.exports = require("zlib");;
 /******/ 			if(threw) delete __webpack_module_cache__[moduleId];
 /******/ 		}
 /******/ 	
-/******/ 		// Flag the module as loaded
-/******/ 		module.loaded = true;
-/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
 /******/ 	
-/******/ 	// expose the module cache
-/******/ 	__nccwpck_require__.c = __webpack_module_cache__;
-/******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/harmony module decorator */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.hmd = (module) => {
-/******/ 			module = Object.create(module);
-/******/ 			if (!module.children) module.children = [];
-/******/ 			Object.defineProperty(module, 'exports', {
-/******/ 				enumerable: true,
-/******/ 				set: () => {
-/******/ 					throw new Error('ES Modules may not assign module.exports or exports.*, Use ESM export syntax, instead: ' + module.id);
-/******/ 				}
-/******/ 			});
-/******/ 			return module;
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
@@ -14678,9 +14653,9 @@ module.exports = require("zlib");;
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	__nccwpck_require__.ab = __dirname + "/";/************************************************************************/
-/******/ 	// module cache are used so entry inlining is disabled
+/******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(__nccwpck_require__.s = 4822);
+/******/ 	return __nccwpck_require__(4822);
 /******/ })()
 ;
