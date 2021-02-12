@@ -24,6 +24,8 @@ jobs:
     - run: npm run lint
 
     - run: npm run test
+      env:
+        GITHUB_TOKEN: fakefake
 
     - name: Commit
       if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
