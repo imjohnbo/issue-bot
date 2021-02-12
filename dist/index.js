@@ -254,7 +254,9 @@ const addIssueToProjectColumn = async (issueId, projectNumber, columnName) => {
     ...context.repo
   });
 
-  const project = projects.find(project => project.number === projectNumber);
+  core.debug(`Found repository projects: ${JSON.stringify(projects)}`);
+
+  const project = projects.find(project => project.number === Number(projectNumber));
 
   if (!project) {
     throw new Error(`Project with number ${projectNumber} could not be found in this repository.`);
