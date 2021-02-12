@@ -11,12 +11,23 @@ __nccwpck_require__.r(__webpack_exports__);
 
 const core = __nccwpck_require__(2186);
 
+// 'string,  string2, string3' => ['string1', 'string2', 'string3']
 const listToArray = (list, delimiter = ',') => {
   return list.split(delimiter).map(a => a.trim());
 };
 
+// {key1: '', key2: 'some string', key3: undefined} => {key2: 'some string'}
+const removeEmptyProps = (obj) => {
+  for (let key in obj) {
+    if (obj[key] === '' || typeof obj[key] === 'undefined') {
+      delete obj[key];
+    }
+  }
+  return obj;
+};
+
 try {
-  const inputs = {
+  const inputs = removeEmptyProps({
     title: core.getInput('title'),
     body: core.getInput('body'),
     labels: core.getInput('labels'),
@@ -28,14 +39,14 @@ try {
     closePrevious: core.getInput('close-previous') === 'true',
     rotateAssignees: core.getInput('rotate-assignees') === 'true',
     linkedComments: core.getInput('linked-comments') === 'true'
-  };
+  });
 
   const inputsValid = (0,_issue_bot__WEBPACK_IMPORTED_MODULE_0__/* .checkInputs */ .mC)(inputs);
 
   if (!inputsValid) {
     throw new Error('Invalid inputs');
   }
-  
+
   if (inputs.labels) {
     inputs.labels = listToArray(inputs.labels);
   }
