@@ -10,15 +10,27 @@ Or just need an issue created on a certain condition? Issue Bot is there when yo
 
 Issue Bot is a flexible GitHub Action that will open a new issue based on `input` values issue template of your choice. You can make it close the most recent one of its type, you can pin it, and since it's open source, [pull requests](https://github.com/imjohnbo/issue-bot/compare) are welcome!
 
+## v3 Migration
+⚠️ If you're a `v2` user, please note that these breaking changes were introduced in `v3`: ⚠️
+- `template` functionality has been moved to a separate action: https://github.com/imjohnbo/extract-issue-template-fields.
+- `labels` now checks if **all** labels match. Before, it checked if **any** labels matched.
+
+and these features were added 🎉:
+- `project` and `column` for adding an issue to a [repository project board](https://docs.github.com/en/github/managing-your-work-on-github/about-project-boards).
+- `milestone` for adding an issue to a [milestone](https://docs.github.com/en/github/managing-your-work-on-github/tracking-the-progress-of-your-work-with-milestones).
+
+As always, your feedback and [contributions](#contributing) are welcome.
+
 ## Usage
 
-As a daily standup bot:
+#### As a daily standup bot:
 
 ```yml
 name: Daily Standup
 on:
   schedule:
-  - cron: 0 12 * * *  # Every day at noon – https://crontab.guru
+  # Every day at noon
+  - cron: 0 12 * * * 
 
 jobs:
   daily_standup:
@@ -26,26 +38,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    # Repo code checkout required if `template` is used
-    - name: Checkout
-      uses: actions/checkout@v2
-
     - name: issue-bot
-      uses: imjohnbo/issue-bot@v2
+      uses: imjohnbo/issue-bot@v3
       with:
-        assignees: "comma, delimited, list, of, handles" # GitHub handles without the @
+        # GitHub handles without the @
+        assignees: "octocat, monalisa"
         labels: "standup"
         pinned: true
         close-previous: true
-        template: ".github/ISSUE_TEMPLATE/standup.md" # assignees, labels will be overridden if present in YAML header
+        title: Standup
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-To keep track of repeated tasks:
+#### To keep track of repeated tasks:
+
+See more info: https://github.com/imjohnbo/extract-issue-template-fields.
 
 ```yml
-name: Generate TPS reports
+name: Generate TPS reports from template
 on:
   schedule:
   - cron: 0 0 1 * *  # First of every month – https://crontab.guru
@@ -60,19 +71,27 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: issue-bot
-      uses: imjohnbo/issue-bot@v2
+    - uses: imjohnbo/extract-issue-template-fields@v0.0.1
+      id: extract
       with:
-        assignees: "me"     # your GitHub handle without the @
-        labels: "tps, bug"
-        pinned: false
-        close-previous: false
-        template: "tps.md"
+        path: .github/ISSUE_TEMPLATE/tps.md
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: issue-bot
+      uses: imjohnbo/issue-bot@v3
+      with:
+        pinned: true
+        close-previous: true
+        assignees: ${{ steps.extract.outputs.assignees }}
+        labels: ${{ steps.extract.outputs.labels }}
+        title: ${{ steps.extract.outputs.title }}
+        body: ${{ steps.extract.outputs.body }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-Or just downstream of a failed CI step 💔:
+#### Or just downstream of a failed CI step 💔:
 
 ```yml
 name: Continuous Integration
@@ -85,47 +104,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    # Repo code checkout required if `template` is used
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: CI
+    - name: Test
+      id: test
       run: |
-        echo "...these are some CI steps..."
+        echo "...these are some test steps..."
 
     - name: issue-bot
       if: failure()
-      uses: imjohnbo/issue-bot@v2
+      uses: imjohnbo/issue-bot@v3
       with:
         assignees: "handles, of, my, teammates"    # GitHub handles without the @
         label: "ci"
         pinned: false
         close-previous: false
-        template: "ci-failure.md"
+        body: "...yo {{ assignees }}, some error messages related to the broken test..."
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+#### In action:
 
-**In action**:
+![Issue Bot Image](https://user-images.githubusercontent.com/2993937/102264733-0870ae00-3ee4-11eb-8b2c-282664b6e0bb.png)
 
-![Issue Bot Image](./issue-bot.png)
+#### More examples:
 
-## Inputs
+[GitHub search](https://github.com/search?q=%22uses%3A+imjohnbo%2Fissue-bot%22&type=code)
 
-- `labels`: Comma delimited list of issue labels. Required value either as input or in YAML header of issue template.
-- `title`: Issue title. Required value either as input or in YAML header of issue template.
-- `assignees`: Comma delimited list of issue assignees.
-- `rotate-assignees`: Whether to round robin the provided assignees (i.e. for first responder duties)
-- `body`: Issue body.
-- `pinned`: Whether to [pins the issue](https://help.github.com/en/github/managing-your-work-on-github/pinning-an-issue-to-your-repository) and unpin the previous one.
-- `close-previous`: Whether to close the most recent previous issue with a matching label.
-- `linked-comments`: Whether to link a previous issue in a series to the next issue via a comment on the previous issue.
-- `template`: Path to template used in issue, eg. `.github/ISSUE_TEMPLATE/bug_report.md`. Can also be a normal Markdown file with no YAML header (converted to `body`), in which case, `labels`, `title`, and `assignees` can be provided as inputs.
+## Inputs and outputs
 
-## Outputs
-
-- `issue-number`: new issue number, if successfully created.
+See [action.yml](action.yml).
 
 ## Environment variables
 
@@ -147,4 +154,4 @@ Feel free to open an issue, or better yet, a
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](LICENSE)
