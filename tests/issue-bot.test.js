@@ -109,6 +109,14 @@ describe('issueBot', () => {
         expect(ok).toBe(false);
     });
 
+    test('checkInputs: fail if projectType doesnt match user, organization, or repository', () => {
+        const ok = issueBot.checkInputs({
+            title: 'Title',
+            projectType: 'nonsense'
+        })
+        expect(ok).toBe(false);
+    });
+
     test('getNextAssignee: defaults to empty assignee', () => {
         const next = issueBot.getNextAssignee([''], '')
         expect(next).toEqual(['']);

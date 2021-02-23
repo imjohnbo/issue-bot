@@ -27,14 +27,22 @@ inputs:
       Assigns new issue to all assignees, or if "rotateAssignees" is set, to the next single assignee whose turn it is.
     required: false
 
+  project-type:
+    description: |-
+      Project type the "project" number corresponds to, e.g. user, organization, or repository project. 
+      Organization and user projects require a GitHub App installation access token, OAuth token, or Personal Access Token.
+      Read more here: https://docs.github.com/en/github/managing-your-work-on-github/about-project-boards.
+      Defaults to "repository".
+    required: false
+
   project:
     description: |-
-      Repository project number (not ID or name) to add issue to, e.g. 2.
+      Project number (not ID or name) to add issue to, e.g. 2.
     required: false
 
   column:
     description: |-
-      Repository project column name to add issue to, e.g. To Do.
+      Project column name to add issue to, e.g. To Do.
       Required if "project" is set.
     required: false
 
