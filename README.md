@@ -136,18 +136,6 @@ jobs:
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # Assuming a GitHub App is installed on the organization and has write permissions to "organization projects"...
-    # Generate a GitHub App installation access token from its App ID and private key
-    # Read more here:
-    #   https://developer.github.com/apps/building-github-apps/creating-a-github-app/
-    #   https://docs.github.com/en/rest/reference/permissions-required-for-github-apps#permission-on-organization-projects
-    - name: Generate token
-      id: generate_token
-      uses: tibdex/github-app-token@v1
-      with:
-        app_id: ${{ secrets.APP_ID }}
-        private_key: ${{ secrets.PRIVATE_KEY }}
-
     # Generates and pins new first responder issue, closes previous, writes linking comments, assigns to next person in line, adds to organization project number 550, column name "Duties", milestone number 10
     - name: New first responder issue
       uses: imjohnbo/issue-bot@v3
@@ -165,7 +153,7 @@ jobs:
         linked-comments: true
         rotate-assignees: true # Picks next assignee in list
       env:
-        GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }} # GitHub App installation token; could alternatively be a personal access token
+        GITHUB_TOKEN: ${{ secrets.PAT }} # Built in GITHUB_TOKEN permissions are too restrictive, so a personal access token is used here
 ```
 
 #### Downstream of a failed CI step 💔:
@@ -214,7 +202,7 @@ See [action.yml](action.yml)
 
 ## Environment variables
 
-- `GITHUB_TOKEN` (required): the automatically generated [`${{ secrets.GITHUB_TOKEN }}`](https://docs.github.com/en/actions/reference/authentication-in-a-workflow) should be enough. However, because of the [limited permissions](https://docs.github.com/en/actions/reference/authentication-in-a-workflow#permissions-for-the-github_token) of this token, if you need to add an issue to a _user_ or _organization_ project, you'll need either a GitHub App installation access token, OAuth app token, or personal access token.
+- `GITHUB_TOKEN` (required): the automatically generated [`${{ secrets.GITHUB_TOKEN }}`](https://docs.github.com/en/actions/reference/authentication-in-a-workflow) should be enough. However, because of the [limited permissions](https://docs.github.com/en/actions/reference/authentication-in-a-workflow#permissions-for-the-github_token) of this token, if you need to add an issue to a _user_ or _organization_ project, you'll need a more permissive token like a [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
 
 ## Template variables
 
