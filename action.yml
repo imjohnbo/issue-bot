@@ -6,6 +6,12 @@ branding:
   color: 'blue'
 
 inputs:
+  token:
+    description: |-
+      Token used to authenticate with GitHub API. Default is built-in token but a personal access token may be used for organization or user projects.
+    required: false
+    default: ${{ github.token }}
+
   title:
     description: |-
       Issue title, e.g. "Daily standup"
