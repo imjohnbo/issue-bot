@@ -28,6 +28,8 @@ jobs:
     - name: Update dist
       if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       uses: swinton/commit@v2.x
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files:
           dist/index.js
