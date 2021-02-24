@@ -67,8 +67,6 @@ jobs:
         pinned: true
         close-previous: true
         linked-comments: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 #### To keep track of repeated tasks:
@@ -109,8 +107,6 @@ jobs:
         pinned: false
         close-previous: false
         linked-comments: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 #### Rotate team duty:
@@ -140,6 +136,7 @@ jobs:
     - name: New first responder issue
       uses: imjohnbo/issue-bot@v3
       with:
+        token: ${{ secrets.PAT }} # Built in GITHUB_TOKEN permissions are too restrictive, so a personal access token is used here
         assignees: ${{ steps.extract.outputs.assignees }}
         labels: ${{ steps.extract.outputs.labels }}
         title: ${{ steps.extract.outputs.title }}
@@ -152,8 +149,6 @@ jobs:
         close-previous: true
         linked-comments: true
         rotate-assignees: true # Picks next assignee in list
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT }} # Built in GITHUB_TOKEN permissions are too restrictive, so a personal access token is used here
 ```
 
 #### Downstream of a failed CI step 💔:
@@ -184,8 +179,6 @@ jobs:
         close-previous: false
         title: Test failure
         body: "...yo {{ assignees }}, some error messages related to the broken test..."
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 #### In action:
@@ -199,10 +192,6 @@ jobs:
 ## Inputs and outputs
 
 See [action.yml](action.yml)
-
-## Environment variables
-
-- `GITHUB_TOKEN` (required): the automatically generated [`${{ secrets.GITHUB_TOKEN }}`](https://docs.github.com/en/actions/reference/authentication-in-a-workflow) should be enough. However, because of the [limited permissions](https://docs.github.com/en/actions/reference/authentication-in-a-workflow#permissions-for-the-github_token) of this token, if you need to add an issue to a _user_ or _organization_ project, you'll need a more permissive token like a [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
 
 ## Template variables
 

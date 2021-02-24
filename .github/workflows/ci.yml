@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-    - master
+    - main
   pull_request:
 
 name: Continuous Integration
@@ -24,13 +24,11 @@ jobs:
     - run: npm run lint
 
     - run: npm run test
-      env:
-        GITHUB_TOKEN: fakefake
 
-    - name: Commit
-      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-      run: |
-        git config --global user.name "GitHub Actions"
-        git add dist/
-        git commit -m "chore: Update dist" || echo "No changes to commit"
-        git push origin HEAD:master
+    - name: Update dist
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      uses: swinton/commit@v2.x
+      with:
+        files:
+          dist/index.js
+        commit-message: Update dist

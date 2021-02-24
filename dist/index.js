@@ -18,6 +18,7 @@ const listToArray = (list, delimiter = ',') => {
 
 try {
   const inputs = {
+    token: core.getInput('token'),
     title: core.getInput('title'),
     body: core.getInput('body'),
     labels: core.getInput('labels'),
@@ -67,9 +68,7 @@ var __webpack_unused_export__;
 const core = __nccwpck_require__(2186);
 const { context, getOctokit } = __nccwpck_require__(5438);
 const handlebars = __nccwpck_require__(7492);
-
-const token = process.env.GITHUB_TOKEN;
-const octokit = getOctokit(token);
+let octokit;
 
 // {key1: '', key2: 'some string', key3: undefined} => {key2: 'some string'}
 const removeEmptyProps = (obj) => {
@@ -374,6 +373,9 @@ const addIssueToMilestone = async (issueNumber, milestoneNumber) => {
  */
 const run = async (inputs) => {
   try {
+    octokit = getOctokit(inputs.token);
+    delete inputs.token;
+
     core.info(`Running with inputs: ${JSON.stringify(inputs)}`);
 
     let previousAssignee; let previousIssueNumber = -1; let previousIssueNodeId; let previousAssignees;
