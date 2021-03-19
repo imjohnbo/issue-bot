@@ -131,7 +131,7 @@ const isPinned = async (issueId) => {
   core.info(`Checking if issue ${issueId} is pinned.`);
 
   const query = `{
-    resource(url: "${context.repo}") {
+    resource(url: "${context.repo.owner}/${context.repo.repo}") {
       ... on Repository {
         pinnedIssues(last: 3) {
           nodes {
