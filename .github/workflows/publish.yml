@@ -13,6 +13,6 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name }}
           
-      - uses: JasonEtco/build-and-tag-action@v1
+      - uses: JasonEtco/build-and-tag-action@v2
         env:
           GITHUB_TOKEN: ${{ github.token }}
