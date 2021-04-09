@@ -90,6 +90,9 @@ outputs:
   issue-number:
     description: 'The issue number of the created issue'
 
+  previous-issue-number:
+    description: 'The issue number of the previous issue, if available'
+
 runs:
   using: 'node12'
   main: 'dist/index.js'
