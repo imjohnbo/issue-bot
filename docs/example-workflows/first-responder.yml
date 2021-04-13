@@ -1,0 +1,40 @@
+#
+# First responder duty, powered by imjohnbo/issue-bot
+#
+name: First Responder
+on:
+  schedule:
+  # First of every month – https://crontab.guru
+  - cron: 0 0 1 * *
+
+jobs:
+  first_responder:
+    name: New responder duty
+    runs-on: ubuntu-latest
+    steps:
+
+    - new: Get template
+      uses: imjohnbo/extract-issue-template-fields@v0.0.1
+      id: extract
+      with:
+        path: .github/ISSUE_TEMPLATE/first_responder.md # assignees, labels, and title defined in issue template header
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # Generates and pins new first responder issue, closes previous, writes linking comments, assigns to next person in line, adds to organization project number 550, column name "Duties", milestone number 10
+    - name: New first responder issue
+      uses: imjohnbo/issue-bot@v3
+      with:
+        token: ${{ secrets.PAT }} # Built in GITHUB_TOKEN permissions are too restrictive, so a personal access token is used here
+        assignees: ${{ steps.extract.outputs.assignees }}
+        labels: ${{ steps.extract.outputs.labels }}
+        title: ${{ steps.extract.outputs.title }}
+        body: ${{ steps.extract.outputs.body }}
+        project-type: organization
+        project: 550  # The project-number from organization project https://github.com/orgs/org/projects/project-number
+        column: Duties
+        milestone: 10 # The milestone-number from https://github.com/owner/repo/milestone/milestone-number
+        pinned: true
+        close-previous: true
+        linked-comments: true
+        rotate-assignees: true # Picks next assignee in list

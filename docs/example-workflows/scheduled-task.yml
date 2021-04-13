@@ -1,0 +1,37 @@
+#
+# Scheduled task, powered by imjohnbo/issue-bot
+#
+name: Generate TPS reports from template
+on:
+  schedule:
+  # First of every month – https://crontab.guru
+  - cron: 0 0 1 * *
+
+jobs:
+  tps_reports:
+    name: TPS reports
+    runs-on: ubuntu-latest
+    steps:
+
+    # Read more: https://github.com/imjohnbo/extract-issue-template-fields
+    - uses: imjohnbo/extract-issue-template-fields@v0.0.1
+      id: extract
+      with:
+        path: .github/ISSUE_TEMPLATE/tps.md # assignees, labels, and title defined in issue template header
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # Generates new TPS report issue, assigns to all assignees in list, adds to repository project number 5, column name "Reports", milestone number 1
+    - name: New TPS report
+      uses: imjohnbo/issue-bot@v3
+      with:
+        assignees: ${{ steps.extract.outputs.assignees }}
+        labels: ${{ steps.extract.outputs.labels }}
+        title: ${{ steps.extract.outputs.title }}
+        body: ${{ steps.extract.outputs.body }}
+        project: 5  # The project-number from repository project https://github.com/owner/repo/projects/project-number
+        column: Reports
+        milestone: 1 # The milestone-number from https://github.com/owner/repo/milestone/milestone-number
+        pinned: false
+        close-previous: false
+        linked-comments: false
