@@ -2,7 +2,7 @@
 > GitHub Actions powered Issue Bot 🦾
 
 <p align="center">
-  [![Continuous Integration](https://github.com/imjohnbo/issue-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/imjohnbo/issue-bot/actions/workflows/ci.yml)
+  <img src="https://github.com/imjohnbo/issue-bot/actions/workflows/ci.yml/badge.svg" />
 </p>
 
 ## About
