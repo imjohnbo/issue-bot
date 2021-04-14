@@ -1,4 +1,12 @@
 # Issue Bot
+> GitHub Actions powered Issue Bot 🦾
+
+<p align="center">
+  <img src="https://github.com/imjohnbo/issue-bot/actions/workflows/ci.yml/badge.svg" />
+  <img src="https://img.shields.io/github/license/imjohnbo/issue-bot" />
+  <img src="https://img.shields.io/github/issues/imjohnbo/issue-bot" />
+  <img src="https://img.shields.io/github/v/release/imjohnbo/issue-bot" />
+</p>
 
 ## About
 
@@ -31,163 +39,25 @@ As always, your feedback and [contributions](#contributing) are welcome.
 
 ## Usage
 
-#### As a daily standup bot:
-
+Simple example:
 ```yml
-name: Daily Standup
-on:
-  schedule:
-  # Every day at noon
-  - cron: 0 12 * * * 
-
-jobs:
-  daily_standup:
-    name: Daily Standup
-    runs-on: ubuntu-latest
-    steps:
-
-    - name: Today's date
-      run: echo "TODAY=$(date '+%Y-%m-%d')" >> $GITHUB_ENV
-
-    # Generates and pins new standup issue, closes previous, writes linking comments, and assigns to all assignees in list
-    - name: New standup issue
-      uses: imjohnbo/issue-bot@v3
-      with:
-        assignees: "octocat, monalisa"
-        labels: "standup"
-        title: Standup
-        body: |-
-          :wave: Hi, {{#each assignees}}@{{this}}{{#unless @last}}, {{/unless}}{{/each}}!
-
-          ## Standup for ${{ env.TODAY }}
-
-          1. What did you work on yesterday?
-          2. What are you working on today?
-          3. What issues are blocking you?
-        pinned: true
-        close-previous: true
-        linked-comments: true
+# ...
+- name: Create new issue
+  uses: imjohnbo/issue-bot@v3
+  with:
+    assignees: "octocat, monalisa"
+    title: Hello, world
+    body: |-
+      :wave: Hi, {{#each assignees}}@{{this}}{{#unless @last}}, {{/unless}}{{/each}}!
+    pinned: true
+# ...
 ```
 
-#### To keep track of repeated tasks:
-
-See more info: https://github.com/imjohnbo/extract-issue-template-fields.
-
-```yml
-name: Generate TPS reports from template
-on:
-  schedule:
-  # First of every month – https://crontab.guru
-  - cron: 0 0 1 * *
-
-jobs:
-  tps_reports:
-    name: TPS reports
-    runs-on: ubuntu-latest
-    steps:
-
-    - uses: imjohnbo/extract-issue-template-fields@v0.0.1
-      id: extract
-      with:
-        path: .github/ISSUE_TEMPLATE/tps.md # assignees, labels, and title defined in issue template header
-      env: 
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    # Generates new TPS report issue, assigns to all assignees in list, adds to repository project number 5, column name "Reports", milestone number 1
-    - name: New TPS report
-      uses: imjohnbo/issue-bot@v3
-      with:
-        assignees: ${{ steps.extract.outputs.assignees }}
-        labels: ${{ steps.extract.outputs.labels }}
-        title: ${{ steps.extract.outputs.title }}
-        body: ${{ steps.extract.outputs.body }}
-        project: 5  # The project-number from repository project https://github.com/owner/repo/projects/project-number
-        column: Reports
-        milestone: 1 # The milestone-number from https://github.com/owner/repo/milestone/milestone-number
-        pinned: false
-        close-previous: false
-        linked-comments: false
-```
-
-#### Rotate team duty:
-
-```yml
-name: First Responder
-on:
-  schedule:
-  # First of every month – https://crontab.guru
-  - cron: 0 0 1 * *
-
-jobs:
-  first_responder:
-    name: New responder duty
-    runs-on: ubuntu-latest
-    steps:
-
-    - new: Get template
-      uses: imjohnbo/extract-issue-template-fields@v0.0.1
-      id: extract
-      with:
-        path: .github/ISSUE_TEMPLATE/first_responder.md # assignees, labels, and title defined in issue template header
-      env: 
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    # Generates and pins new first responder issue, closes previous, writes linking comments, assigns to next person in line, adds to organization project number 550, column name "Duties", milestone number 10
-    - name: New first responder issue
-      uses: imjohnbo/issue-bot@v3
-      with:
-        token: ${{ secrets.PAT }} # Built in GITHUB_TOKEN permissions are too restrictive, so a personal access token is used here
-        assignees: ${{ steps.extract.outputs.assignees }}
-        labels: ${{ steps.extract.outputs.labels }}
-        title: ${{ steps.extract.outputs.title }}
-        body: ${{ steps.extract.outputs.body }}
-        project-type: organization
-        project: 550  # The project-number from organization project https://github.com/orgs/org/projects/project-number
-        column: Duties
-        milestone: 10 # The milestone-number from https://github.com/owner/repo/milestone/milestone-number
-        pinned: true
-        close-previous: true
-        linked-comments: true
-        rotate-assignees: true # Picks next assignee in list
-```
-
-#### Downstream of a failed CI step 💔:
-
-```yml
-name: Continuous Integration
-on:
-  [push, pull_request]
-
-jobs:
-  ci:
-    name: CI
-    runs-on: ubuntu-latest
-    steps:
-
-    - name: Test
-      id: test
-      run: |
-        echo "...these are some test steps..."
-
-    - name: issue-bot
-      if: failure()
-      uses: imjohnbo/issue-bot@v3
-      with:
-        assignees: "handles, of, my, teammates"    # GitHub handles without the @
-        labels: ci
-        pinned: false
-        close-previous: false
-        title: Test failure
-        body: "...yo {{ assignees }}, some error messages related to the broken test..."
-```
-
-#### In action:
-
-![Issue Bot Image](https://user-images.githubusercontent.com/2993937/102264733-0870ae00-3ee4-11eb-8b2c-282664b6e0bb.png)
-
-#### More examples:
-
-[GitHub search](https://github.com/search?q=%22uses%3A+imjohnbo%2Fissue-bot%22&type=code)
+For more examples, see a [GitHub-wide search](https://github.com/search?q=%22uses%3A+imjohnbo%2Fissue-bot%22&type=code) or [./docs/example-workflows](docs/example-workflows/):
+- [Daily standup bot](docs/example-workflows/standup.yml)
+- [Repeated tasks](docs/example-workflows/scheduled-task.yml)
+- [Duty rotation](docs/example-workflows/first-responder.yml)
+- [Ad hoc after broken CI build](docs/example-workflows/broken-build.yml)
 
 ## Inputs and outputs
 
