@@ -3,6 +3,9 @@
 
 <p align="center">
   <img src="https://github.com/imjohnbo/issue-bot/actions/workflows/ci.yml/badge.svg" />
+  <img src="https://img.shields.io/github/license/imjohnbo/issue-bot" />
+  <img src="https://img.shields.io/github/issues/imjohnbo/issue-bot" />
+  <img src="https://img.shields.io/github/v/release/imjohnbo/issue-bot" />
 </p>
 
 ## About
