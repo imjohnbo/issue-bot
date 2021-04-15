@@ -74,9 +74,23 @@ inputs:
   linked-comments:
     description: |-
       Boolean whether to write issue comments linking this issue and previous issue matching ALL of the provided "lables",
-      e.g. "Previously: #345" and "Next: #346".
+      e.g. "Previous in series: #345" and "Next in series: #346".
       Requires "labels".
     default: 'false'
+    required: false
+
+  linked-comments-new-issue-text:
+    description: |-
+      Text of the comment on the new issue that links to the previous issue.
+      Requires "linked-comments, labels".
+    default: 'Previous in series: #{{ previousIssueNumber }}'
+    required: false
+
+  linked-comments-previous-issue-text:
+    description: |-
+      Text of the comment on the previous issue that links to the new issue.
+      Requires "linked-comments, labels".
+    default: 'Next in series: #{{ newIssueNumber }}'
     required: false
 
   rotate-assignees:

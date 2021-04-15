@@ -70,6 +70,10 @@ The issue body is treated as a [Handlebars](https://handlebarsjs.com) template, 
 - `assignees`: The array of issue assignees.
 - `previousIssueNumber`: The previous issue number in the series.
 
+The linked comments (`linked-comments-new-issue-text`, `linked-comments-previous-issue-text`) support these variables _and_:
+
+- `newIssueNumber`: The new issue number.
+
 ## Contributing
 
 Feel free to open an issue, or better yet, a
