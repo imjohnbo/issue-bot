@@ -2,7 +2,7 @@ name: Mark stale issues and pull requests
 
 on:
   schedule:
-  - cron: 55 17 4 * *
+  - cron: 55 17 10 * *
 
 jobs:
   stale:
@@ -17,6 +17,6 @@ jobs:
         stale-pr-message: "Beep boop! 🤖 This pull request hasn't had any activity in a while. I'll close it if I don't hear back soon."
         stale-issue-label: 'no-issue-activity'
         stale-pr-label: 'no-pr-activity'
-        exempt-issue-labels: ongoing
+        exempt-issue-labels: 'no-stale'
         days-before-stale: 30
         days-before-close: 15
