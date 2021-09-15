@@ -150,7 +150,7 @@ const createNewIssue = async (options) => {
 
   core.info(`Creating new issue with options: ${JSON.stringify(options)} and body: ${options.body}`);
 
-  const { data: { number: newIssueNumber, id: newIssueId, node_id: newIssueNodeId } } = (await octokit.issues.create({
+  const { data: { number: newIssueNumber, id: newIssueId, node_id: newIssueNodeId } } = (await octokit.rest.issues.create({
     ...context.repo,
     title: options.title,
     labels: options.labels,
@@ -172,7 +172,7 @@ const createNewIssue = async (options) => {
 const closeIssue = async (issueNumber) => {
   core.info(`Closing issue number ${issueNumber}...`);
 
-  return await octokit.issues.update({
+  return await octokit.rest.issues.update({
     ...context.repo,
     issue_number: issueNumber,
     state: 'closed'
@@ -183,14 +183,14 @@ const makeLinkedComments = async (previousIssueNumber, previousIssueText, newIss
   core.info(`Making linked comments on new issue number ${newIssueNumber} and previous issue number ${previousIssueNumber}`);
 
   // Create comment on the new that links to the previous
-  await octokit.issues.createComment({
+  await octokit.rest.issues.createComment({
     ...context.repo,
     issue_number: newIssueNumber,
     body: newIssueText
   });
 
   // Create comment on the previous that links to the new
-  await octokit.issues.createComment({
+  await octokit.rest.issues.createComment({
     ...context.repo,
     issue_number: previousIssueNumber,
     body: previousIssueText
@@ -204,7 +204,7 @@ const getPreviousIssue = async (labels) => {
 
   let previousIssueNumber; let previousIssueNodeId; let previousAssignees = '';
 
-  const data = (await octokit.issues.listForRepo({
+  const data = (await octokit.rest.issues.listForRepo({
     ...context.repo,
     labels
   })).data[0];
@@ -233,7 +233,7 @@ const addIssueToProjectColumn = async (options) => {
 
   if (options.projectType === 'user') {
     for await (const response of octokit.paginate.iterator(
-      octokit.projects.listForUser,
+      octokit.rest.projects.listForUser,
       {
         username: context.repo.owner
       }
@@ -242,7 +242,7 @@ const addIssueToProjectColumn = async (options) => {
     }
   } else if (options.projectType === 'organization') {
     for await (const response of octokit.paginate.iterator(
-      octokit.projects.listForOrg,
+      octokit.rest.projects.listForOrg,
       {
         org: context.repo.owner
       }
@@ -251,7 +251,7 @@ const addIssueToProjectColumn = async (options) => {
     }
   } else if (options.projectType === 'repository') {
     for await (const response of octokit.paginate.iterator(
-      octokit.projects.listForRepo,
+      octokit.rest.projects.listForRepo,
       {
         ...context.repo
       }
@@ -268,7 +268,7 @@ const addIssueToProjectColumn = async (options) => {
     throw new Error(`Project with type ${options.projectType}, number ${options.projectNumber} could not be found.`);
   }
 
-  const { data: columns } = await octokit.projects.listColumns({
+  const { data: columns } = await octokit.rest.projects.listColumns({
     project_id: project.id
   });
 
@@ -284,7 +284,7 @@ const addIssueToProjectColumn = async (options) => {
 
   core.debug(`Column name ${options.columnName} maps to column id ${column.id}`);
 
-  await octokit.projects.createCard({
+  await octokit.rest.projects.createCard({
     column_id: column.id,
     content_id: options.issueId,
     content_type: 'Issue'
@@ -294,7 +294,7 @@ const addIssueToProjectColumn = async (options) => {
 const addIssueToMilestone = async (issueNumber, milestoneNumber) => {
   core.info(`Adding issue number ${issueNumber} to milestone number ${milestoneNumber}`);
 
-  const { data: issue } = await octokit.issues.update({
+  const { data: issue } = await octokit.rest.issues.update({
     ...context.repo,
     issue_number: issueNumber,
     milestone: milestoneNumber
@@ -312,7 +312,7 @@ const addIssueToMilestone = async (issueNumber, milestoneNumber) => {
  */
 const run = async (inputs) => {
   try {
-    octokit = getOctokit(inputs.token).rest;
+    octokit = getOctokit(inputs.token);
     delete inputs.token;
 
     core.info(`Running with inputs: ${JSON.stringify(inputs)}`);
