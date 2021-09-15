@@ -364,12 +364,14 @@ const run = async (inputs) => {
     // If there is a previous issue, close it out and point to the new
     if (issueExists(previousIssueNumber) && inputs.closePrevious) {
       await closeIssue(previousIssueNumber);
+    }
 
-      // If the pinned input is true, pin the current, unpin the previous
-      if (inputs.pinned) {
+    // If the pinned input is true, pin the current, unpin the previous
+    if (inputs.pinned) {
+      if (issueExists(previousIssueNumber)) {
         await unpin(previousIssueNodeId);
-        await pin(newIssueNodeId);
       }
+      await pin(newIssueNodeId);
     }
 
     if (newIssueNumber) {
