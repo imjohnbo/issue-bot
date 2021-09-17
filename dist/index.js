@@ -206,7 +206,8 @@ const getPreviousIssue = async (labels) => {
 
   const data = (await octokit.rest.issues.listForRepo({
     ...context.repo,
-    labels
+    labels,
+    state: "all"
   })).data[0];
 
   if (data) {
