@@ -73,7 +73,7 @@ inputs:
     
   linked-comments:
     description: |-
-      Boolean whether to write issue comments linking this issue and previous issue matching ALL of the provided "lables",
+      Boolean whether to write issue comments linking this issue and previous issue matching ALL of the provided "labels",
       e.g. "Previous in series: #345" and "Next in series: #346".
       Requires "labels".
     default: 'false'
