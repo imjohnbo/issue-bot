@@ -21,18 +21,10 @@ jobs:
 
     - run: npm run test
     
-    - name: Examine changes
-      run: |-
-        echo 'FILES_CHANGED<<EOF' >> $GITHUB_ENV
-        echo $(git diff --exit-code dist/index.js) >> $GITHUB_ENV
-        echo 'EOF' >> $GITHUB_ENV
-
-    - name: Update dist
-      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.FILES_CHANGED }}
-      uses: swinton/commit@v2.x
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        files:
-          dist/index.js
-        commit-message: Update dist
+    - name: Commit changes to dist
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      run: |
+        git config --global user.name "GitHub Actions"
+        git add dist/
+        git commit -m "chore: Update dist" || echo "No changes to commit"
+        git push origin HEAD:main
