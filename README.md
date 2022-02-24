@@ -61,7 +61,10 @@ For more examples, see a [GitHub-wide search](https://github.com/search?q=%22use
 
 ## Inputs and outputs
 
-See [action.yml](action.yml)
+See [action.yml](action.yml) for full list.
+
+<!-- START MERMAID -->
+<!-- END MERMAID -->
 
 ## Template variables
 
