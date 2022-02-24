@@ -28,8 +28,8 @@ jobs:
     - name: Examine changes
       run: |-
         echo 'FILES_CHANGED<<EOF' >> $GITHUB_ENV
-        git diff --exit-code dist/index.js >> $GITHUB_ENV
-        echo "\nEOF" >> $GITHUB_ENV
+        echo $(git diff --exit-code dist/index.js) >> $GITHUB_ENV
+        echo 'EOF' >> $GITHUB_ENV
 
     - name: Update dist
       if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.FILES_CHANGED }}
