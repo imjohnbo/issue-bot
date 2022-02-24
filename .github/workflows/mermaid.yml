@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - id: mermaid
-        uses: ./
+        uses: imjohnbo/action-to-mermaid@v1
 
       # Create or update an action.mermaid.md
       - name: Create or update action.mermaid.md
