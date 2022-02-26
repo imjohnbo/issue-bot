@@ -21,10 +21,11 @@ jobs:
 
     - run: npm run test
     
-    - name: Commit changes to dist
+    - name: Commit file
       if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-      run: |
-        git config --global user.name "GitHub Actions"
-        git add dist/
-        git commit -m "chore: Update dist" || echo "No changes to commit"
-        git push origin HEAD:main
+      uses: imjohnbo/commit@v1
+      with:
+        files: |
+          dist/index.js
+        commit-message: Committing dist/index.js
+        ref: refs/heads/main
