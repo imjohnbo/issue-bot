@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@629c2de402a417ea7690ca6ce3f33229e27606a5 # v2
 
       - id: mermaid
-        uses: imjohnbo/action-to-mermaid@v1
+        uses: imjohnbo/action-to-mermaid@a55b587b59c381f5f3becdbc1992988a766f2139 # v1
 
       # Create or update an action.mermaid.md
       - name: Create or update action.mermaid.md
@@ -38,7 +38,7 @@ jobs:
 
       - name: Commit to action.mermaid.md
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        uses: imjohnbo/commit@v1
+        uses: imjohnbo/commit@178d297eaefad8461c6d8517e6a7e62ae0c9d45c # v1
         with:
           files: |
             action.mermaid.md
