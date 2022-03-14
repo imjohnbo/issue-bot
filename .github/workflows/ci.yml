@@ -6,6 +6,9 @@ on:
 
 name: Continuous Integration
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
