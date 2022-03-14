@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/stale@v5
+    - uses: actions/stale@428b0ed64d74596742200dc98805bb90f39ef9f0 # v5
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         stale-issue-message: "Beep boop! 🤖 This issue hasn't had any activity in a while. I'll close it if I don't hear back soon."
