@@ -3,6 +3,10 @@ name: Mark stale issues and pull requests
 on:
   schedule:
   - cron: 55 17 10 * *
+  
+permissions:
+  issues: write
+  pull-requests: write
 
 jobs:
   stale:
@@ -10,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/stale@v3
+    - uses: actions/stale@v5
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         stale-issue-message: "Beep boop! 🤖 This issue hasn't had any activity in a while. I'll close it if I don't hear back soon."
