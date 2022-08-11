@@ -17506,6 +17506,7 @@ try {
     labels: core.getInput('labels'),
     assignees: core.getInput('assignees'),
     projectType: core.getInput('project-type'),
+    projectV2: core.getInput('projectV2'),
     project: core.getInput('project'),
     column: core.getInput('column'),
     milestone: core.getInput('milestone'),
