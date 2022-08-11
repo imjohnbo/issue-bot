@@ -46,6 +46,11 @@ inputs:
       Project number (not ID or name) to add issue to, e.g. 2.
     required: false
 
+  projectV2:
+    description: |-
+      Project V2/beta/next node ID to add issue, e.g. "PN_1N4bGfgAAc4A72H1"
+    required: false
+
   column:
     description: |-
       Project column name to add issue to, e.g. To Do.
