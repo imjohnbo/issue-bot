@@ -292,6 +292,28 @@ const addIssueToProjectColumn = async (options) => {
   });
 };
 
+const addIssueToProjectV2 = async (options) => {
+  core.info(`Adding issue with node ID ${options.issueNodeId} to project V2 with node ID: ${options.projectNodeId}`);
+  const mutation = `mutation {
+    addProjectNextItem(
+      input: {
+        projectId: "${options.projectNodeId}"
+        contentId: "${options.issueNodeId}"
+    ) {
+      projectNextItem {
+        id
+      }
+    }
+  }`;
+
+  return octokit.graphql({
+    query: mutation,
+    headers: {
+      accept: 'application/vnd.github.elektra-preview+json'
+    }
+  });
+};
+
 const addIssueToMilestone = async (issueNumber, milestoneNumber) => {
   core.info(`Adding issue number ${issueNumber} to milestone number ${milestoneNumber}`);
 
@@ -339,6 +361,13 @@ const run = async (inputs) => {
         projectType: inputs.projectType,
         projectNumber: inputs.project,
         columnName: inputs.column
+      });
+    }
+
+    if (inputs.projectV2) {
+      await addIssueToProjectV2({
+        issueNodeId: newIssueNodeId,
+        projectNodeId: inputs.projectV2,
       });
     }
 
@@ -401,6 +430,7 @@ __webpack_unused_export__ = closeIssue;
 __webpack_unused_export__ = makeLinkedComments;
 __webpack_unused_export__ = getPreviousIssue;
 __webpack_unused_export__ = addIssueToProjectColumn;
+__webpack_unused_export__ = addIssueToProjectV2;
 __webpack_unused_export__ = addIssueToMilestone;
 exports.KH = run;
 
@@ -17506,8 +17536,8 @@ try {
     labels: core.getInput('labels'),
     assignees: core.getInput('assignees'),
     projectType: core.getInput('project-type'),
-    projectV2: core.getInput('projectV2'),
     project: core.getInput('project'),
+    projectV2: core.getInput('projectV2'),
     column: core.getInput('column'),
     milestone: core.getInput('milestone'),
     pinned: core.getInput('pinned') === 'true',
