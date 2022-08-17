@@ -298,7 +298,7 @@ const addIssueToProjectV2 = async (options) => {
   mutation {
     addProjectV2ItemById(
       input: {
-        clientMutationId: "${Math.random()}"
+        clientMutationId: "${(new Date()).getTime()}${Math.random()}"
         projectId: "${options.projectNodeId}"
         contentId: "${options.issueNodeId}"
       }
