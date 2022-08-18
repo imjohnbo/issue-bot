@@ -25,6 +25,7 @@ Issue Bot is a flexible GitHub action that takes care of a few issue related tas
 - Makes issue comments linking new and previous issues if `linked-comments` is true
 - Assigns new issue only to the _next_ assignee in the list if `rotate-assignees` is true. Useful for duty rotation like first responder.
 - Pairs well with [imjohnbo/extract-issue-template-fields](https://github.com/imjohnbo/extract-issue-template-fields) if you'd prefer to open issues based on [issue templates](https://docs.github.com/en/github/building-a-strong-community/about-issue-and-pull-request-templates#issue-templates)
+- Supports Projects V2 (previously known as Projects Beta and Projects Next).
 
 ## v3 Migration
 ⚠️ If you're a `v2` user, please note that these breaking changes were introduced in `v3`: ⚠️
@@ -119,6 +120,29 @@ The issue body is treated as a [Handlebars](https://handlebarsjs.com) template, 
 The linked comments (`linked-comments-new-issue-text`, `linked-comments-previous-issue-text`) support these variables _and_:
 
 - `newIssueNumber`: The new issue number.
+
+
+## Projects V2 support:
+
+Projects V2 were previously known as Projects Beta and Projects Next.
+
+It works both for user owned projects and organization owned projects. Note that there are no repository owned projects V2.
+
+To use it simply put project url:
+```yaml 
+projectV2: orgs/{name}/projects/{number}
+projectV2: users/{name}/projects/{number}
+```
+
+e.g.
+```
+token: ...github_pat_token_with_project_scope
+projectV2: orgs/github/projects/2
+projectV2: users/octokit/projects/31
+```
+
+Please note that Projects V2 are still in beta and they require Github Personal Access Token (PAT) with full 'project' scope. You can set it via the `token:` field.
+
 
 ## Contributing
 
