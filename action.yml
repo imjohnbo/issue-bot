@@ -48,7 +48,10 @@ inputs:
 
   projectV2:
     description: |-
-      Project V2/beta/next node ID to add issue, e.g. "PN_1N4bGfgAAc4A72H1"
+      Project V2 / beta / next URL. For user projects use "users/{username}/projects/{number}"
+      and for orgs use "orgs/{name}/projects/{number}". Projects V2 does not support repository projects.
+      The "token" field must be set to Github PAT (Personal Access Token) which is a requirement
+      of Projects V2 graphql. The PAT token needs to have the full "project" scope permissions.
     required: false
 
   column:
