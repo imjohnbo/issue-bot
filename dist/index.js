@@ -369,7 +369,7 @@ const getOrgProjectV2NodeId = async (options) => {
       accept: 'application/vnd.github.elektra-preview+json'
     }
   });
-  return data.user.projectV2.id
+  return data.organization.projectV2.id
 }
 
 const addIssueToMilestone = async (issueNumber, milestoneNumber) => {
