@@ -46,6 +46,9 @@ const checkInputs = (inputs) => {
   if (inputs.closePrevious) {
     ok = ok && !!inputs.labels;
   }
+  if (inputs.skipOnPrevious) {
+    ok = ok && !!inputs.labels;
+  }
   if (inputs.linkedComments) {
     ok = ok && !!inputs.labels;
   }
@@ -199,7 +202,8 @@ const makeLinkedComments = async (previousIssueNumber, previousIssueText, newIss
 
 // Return previous issue matching both labels
 // @input labels: ['label1', 'label2']
-const getPreviousIssue = async (labels) => {
+const getPreviousIssue = async (opts) => {
+  const { labels, since } = opts
   core.info(`Finding previous issue with labels: ${JSON.stringify(labels)}...`);
 
   let previousIssueNumber; let previousIssueNodeId; let previousAssignees = '';
@@ -207,7 +211,8 @@ const getPreviousIssue = async (labels) => {
   const data = (await octokit.rest.issues.listForRepo({
     ...context.repo,
     labels,
-    state: 'all'
+    state: 'all',
+    since,
   })).data[0];
 
   if (data) {
@@ -320,8 +325,16 @@ const run = async (inputs) => {
 
     let previousAssignee; let previousIssueNumber = -1; let previousIssueNodeId; let previousAssignees;
 
-    if (needPreviousIssue(inputs.pinned, inputs.closePrevious, inputs.rotateAssignees, inputs.linkedComments)) {
-      ({ previousIssueNumber, previousIssueNodeId, previousAssignees } = await getPreviousIssue(inputs.labels));
+    if (needPreviousIssue(inputs.pinned, inputs.closePrevious, inputs.skipOnPrevious, inputs.rotateAssignees, inputs.linkedComments)) {
+      ({ previousIssueNumber, previousIssueNodeId, previousAssignees } = await getPreviousIssue(
+        { labels: inputs.labels, since: inputs.previousLookupSince }
+      ));
+    }
+
+    if (issueExists(previousIssueNumber) && inputs.skipOnPrevious) {
+      core.info(`Previous issue exists (number ${previousIssueNumber}). Skipping.`);
+      core.setOutput('previous-issue-number', String(previousIssueNumber));
+      return
     }
 
     // Rotate assignee to next in list
@@ -17511,6 +17524,8 @@ try {
     milestone: core.getInput('milestone'),
     pinned: core.getInput('pinned') === 'true',
     closePrevious: core.getInput('close-previous') === 'true',
+    skipOnPrevious: core.getInput('skip-on-previous') === 'true',
+    previousLookupSince: core.getInput('previous-lookup-since') || undefined,
     rotateAssignees: core.getInput('rotate-assignees') === 'true',
     linkedComments: core.getInput('linked-comments') === 'true',
     linkedCommentsNewIssueText: core.getInput('linked-comments-new-issue-text'),

@@ -20,6 +20,7 @@ Issue Bot is a flexible GitHub action that takes care of a few issue related tas
 - Opens new issue with `title`, `body`, `labels`, and `assignees`
 - Uses [Mustache templating syntax](https://github.com/janl/mustache.js) in `body`, along with a couple of handy template variables: `assignees` and `previousIssueNumber`
 - Closes most recent previous issue with all `labels` if `close-previous` is true
+- When `skip-on-previous` is true the action skips creating new issue if previous issue with all `labels` exists. You can configure how far into past to look for previous issue using `previous-lookup-since: yyyy-mm-ddThh:mm:ss`.
 - Adds new issue to `project` (user, organization, or repository project based on value of `project-type`), `column`, and `milestone`
 - Pins new issue and unpins previous issue if `pinned` is true
 - Makes issue comments linking new and previous issues if `linked-comments` is true

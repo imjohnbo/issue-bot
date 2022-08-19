@@ -70,6 +70,20 @@ inputs:
       Requires "labels".
     default: 'false'
     required: false
+
+  skip-on-previous:
+    description: :-
+      Skips creating issue if previous issue exists.
+    default: 'false'
+    required: false
+
+  previous-lookup-since:
+    description: |-
+      Describes how far into the past should the search for previous issue continue. 
+      Useful for creating scheduled issues with rare occurance times. Formatted as ISO time e.g.:
+      "2022-08-19T00:00:00"
+    default: ''
+    required: false
     
   linked-comments:
     description: |-
