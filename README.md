@@ -25,7 +25,7 @@ Issue Bot is a flexible GitHub action that takes care of a few issue related tas
 - Makes issue comments linking new and previous issues if `linked-comments` is true
 - Assigns new issue only to the _next_ assignee in the list if `rotate-assignees` is true. Useful for duty rotation like first responder.
 - Pairs well with [imjohnbo/extract-issue-template-fields](https://github.com/imjohnbo/extract-issue-template-fields) if you'd prefer to open issues based on [issue templates](https://docs.github.com/en/github/building-a-strong-community/about-issue-and-pull-request-templates#issue-templates)
-- Supports Projects V2 (previously known as Projects Beta and Projects Next).
+- Adds new issue to user or organization project at `project-v2-path`
 
 ## v3 Migration
 ⚠️ If you're a `v2` user, please note that these breaking changes were introduced in `v3`: ⚠️
