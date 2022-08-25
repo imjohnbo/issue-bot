@@ -46,12 +46,11 @@ inputs:
       Project number (not ID or name) to add issue to, e.g. 2.
     required: false
 
-  projectV2:
+  project-v2-path:
     description: |-
-      Project V2 / beta / next URL. For user projects use "users/{username}/projects/{number}"
-      and for orgs use "orgs/{name}/projects/{number}". Projects V2 does not support repository projects.
-      The "token" field must be set to Github PAT (Personal Access Token) which is a requirement
-      of Projects V2 graphql. The PAT token needs to have the full "project" scope permissions.
+      Path of the user or organization project, e.g. "users/{username}/projects/{number}" or "orgs/{name}/projects/{number}". 
+      Unlike Projects (classic), Projects do not support repository projects.
+      Token with proper scopes required in "token" field. Personal access token or GitHub App installation access token. Read more here: https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/using-the-api-to-manage-projects#authentication.
     required: false
 
   column:
