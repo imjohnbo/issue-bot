@@ -17594,7 +17594,7 @@ try {
     assignees: core.getInput('assignees'),
     projectType: core.getInput('project-type'),
     project: core.getInput('project'),
-    projectV2: core.getInput('project-v2-path'),
+    projectV2: core.getInput('projectV2'),
     column: core.getInput('column'),
     milestone: core.getInput('milestone'),
     pinned: core.getInput('pinned') === 'true',
