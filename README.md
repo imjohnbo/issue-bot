@@ -130,15 +130,15 @@ It works both for user owned projects and organization owned projects. Note that
 
 To use it simply put project url:
 ```yaml 
-projectV2: orgs/{name}/projects/{number}
-projectV2: users/{name}/projects/{number}
+project-v2-path: orgs/{name}/projects/{number}
+project-v2-path: users/{name}/projects/{number}
 ```
 
 e.g.
 ```
 token: ...github_pat_token_with_project_scope
-projectV2: orgs/github/projects/2
-projectV2: users/octokit/projects/31
+project-v2-path: orgs/github/projects/2
+project-v2-path: users/octokit/projects/31
 ```
 
 Please note that Projects V2 are still in beta and they require Github Personal Access Token (PAT) with full 'project' scope. You can set it via the `token:` field.

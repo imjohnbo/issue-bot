@@ -46,7 +46,7 @@ inputs:
       Project number (not ID or name) to add issue to, e.g. 2.
     required: false
 
-  projectV2:
+  project-v2-path:
     description: |-
       Project V2 / beta / next URL. For user projects use "users/{username}/projects/{number}"
       and for orgs use "orgs/{name}/projects/{number}". Projects V2 does not support repository projects.
