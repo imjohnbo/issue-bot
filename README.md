@@ -25,6 +25,7 @@ Issue Bot is a flexible GitHub action that takes care of a few issue related tas
 - Makes issue comments linking new and previous issues if `linked-comments` is true
 - Assigns new issue only to the _next_ assignee in the list if `rotate-assignees` is true. Useful for duty rotation like first responder.
 - Pairs well with [imjohnbo/extract-issue-template-fields](https://github.com/imjohnbo/extract-issue-template-fields) if you'd prefer to open issues based on [issue templates](https://docs.github.com/en/github/building-a-strong-community/about-issue-and-pull-request-templates#issue-templates)
+- Adds new issue to user or organization project at `project-v2-path`
 
 ## v3 Migration
 ⚠️ If you're a `v2` user, please note that these breaking changes were introduced in `v3`: ⚠️
@@ -119,6 +120,16 @@ The issue body is treated as a [Handlebars](https://handlebarsjs.com) template, 
 The linked comments (`linked-comments-new-issue-text`, `linked-comments-previous-issue-text`) support these variables _and_:
 
 - `newIssueNumber`: The new issue number.
+
+
+## Projects support
+
+Issue Bot currently supports [Projects](https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects) (a.k.a. Projects v2, Projects Beta, and Projects Next) (`project-v2-path`) and [Projects (classic)](https://docs.github.com/en/issues/organizing-your-work-with-project-boards/managing-project-boards/about-project-boards) (`project`, `project-type`, `column`, and `milestone`). See [`action.yml`](action.yml) for more details about these inputs.
+
+Except when adding an issue to a Projects (classic) repository board, where the [built in `github.token`'s](https://github.com/imjohnbo/issue-bot/blob/main/action.yml#L13) permissions suffice, it's recommended to use a GitHub App installation access token or personal access token with the proper scopes.
+
+Support for Projects (classic) will be dropped in a future version.
+
 
 ## Contributing
 

@@ -1,0 +1,38 @@
+#
+# Daily standup, powered by imjohnbo/issue-bot
+#
+name: Daily Standup Projects V2
+on:
+  schedule:
+  # Every day at noon
+  - cron: 0 12 * * * 
+
+jobs:
+  daily_standup:
+    name: Daily Standup Projects V2
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Today's date
+      run: echo "TODAY=$(date '+%Y-%m-%d')" >> $GITHUB_ENV
+
+    # Generates and pins new standup issue, closes previous, writes linking comments, and assigns to all assignees in list
+    - name: New standup issue
+      uses: imjohnbo/issue-bot@v3
+      with:
+        assignees: "octocat, monalisa"
+        labels: "standup"
+        title: Standup
+        body: |-
+          :wave: Hi, {{#each assignees}}@{{this}}{{#unless @last}}, {{/unless}}{{/each}}!
+
+          ## Standup for ${{ env.TODAY }}
+
+          1. What did you work on yesterday?
+          2. What are you working on today?
+          3. What issues are blocking you?
+        pinned: true
+        close-previous: true
+        linked-comments: true
+        project-v2-path: users/jblew/projects/2
+        token: ${{ secrets.PAT }} # for example, a personal access token with `project` scope

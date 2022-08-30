@@ -292,6 +292,85 @@ const addIssueToProjectColumn = async (options) => {
   });
 };
 
+const addIssueToProjectV2 = async (options) => {
+  core.info(`Adding issue with node ID ${options.issueNodeId} to project V2 URL: ${options.url}`);
+  const projectNodeId = await getProjectV2NodeIdFromUrl(options.url);
+  core.info(`Adding issue with node ID ${options.issueNodeId} to project V2 with node ID: ${projectNodeId}`);
+  const mutation = `
+  mutation {
+    addProjectV2ItemById(
+      input: {
+        projectId: "${projectNodeId}"
+        contentId: "${options.issueNodeId}"
+      }
+    ) {
+      item {
+        id
+      }
+    }
+  }
+  `;
+
+  return octokit.graphql({
+    query: mutation,
+    headers: {
+      accept: 'application/vnd.github.elektra-preview+json'
+    }
+  });
+};
+
+const getProjectV2NodeIdFromUrl = async (url) => {
+  const match = /^.*(?<type>orgs|users)\/(?<name>[^/]+)\/projects\/(?<number>[0-9]+).*$/gm
+    .exec(url.trim());
+  if (!match || !match.groups || !match.groups.type || !match.groups.name || !match.groups.number) {
+    throw new Error('Malformed projectV2 url');
+  }
+  const { type, name, number } = match.groups;
+  return type === 'orgs'
+    ? await getOrgProjectV2NodeId({ name, number })
+    : await getUserProjectV2NodeId({ name, number });
+};
+
+const getUserProjectV2NodeId = async (options) => {
+  const { name, number } = options;
+  const query = `
+  query FindUserProjectNodeID {
+      user(login: "${name}") {
+          projectV2(number: ${number}) {
+              id
+          }
+      }
+  }
+  `;
+  const data = await octokit.graphql({
+    query,
+    headers: {
+      accept: 'application/vnd.github.elektra-preview+json'
+    }
+  });
+  return data.user.projectV2.id;
+};
+
+const getOrgProjectV2NodeId = async (options) => {
+  const { name, number } = options;
+  const query = `
+  query FindOrgProjectNodeID {
+      organization(login: "${name}") {
+          projectV2(number: ${number}) {
+              id
+          }
+      }
+  }
+  `;
+  const data = await octokit.graphql({
+    query,
+    headers: {
+      accept: 'application/vnd.github.elektra-preview+json'
+    }
+  });
+  return data.organization.projectV2.id;
+};
+
 const addIssueToMilestone = async (issueNumber, milestoneNumber) => {
   core.info(`Adding issue number ${issueNumber} to milestone number ${milestoneNumber}`);
 
@@ -339,6 +418,13 @@ const run = async (inputs) => {
         projectType: inputs.projectType,
         projectNumber: inputs.project,
         columnName: inputs.column
+      });
+    }
+
+    if (inputs.projectV2) {
+      await addIssueToProjectV2({
+        issueNodeId: newIssueNodeId,
+        url: inputs.projectV2
       });
     }
 
@@ -401,6 +487,7 @@ __webpack_unused_export__ = closeIssue;
 __webpack_unused_export__ = makeLinkedComments;
 __webpack_unused_export__ = getPreviousIssue;
 __webpack_unused_export__ = addIssueToProjectColumn;
+__webpack_unused_export__ = addIssueToProjectV2;
 __webpack_unused_export__ = addIssueToMilestone;
 exports.KH = run;
 
@@ -17507,6 +17594,7 @@ try {
     assignees: core.getInput('assignees'),
     projectType: core.getInput('project-type'),
     project: core.getInput('project'),
+    projectV2: core.getInput('project-v2-path'),
     column: core.getInput('column'),
     milestone: core.getInput('milestone'),
     pinned: core.getInput('pinned') === 'true',
