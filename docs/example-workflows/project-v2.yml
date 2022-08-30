@@ -35,3 +35,4 @@ jobs:
         close-previous: true
         linked-comments: true
         project-v2-path: users/jblew/projects/2
+        token: ${{ secrets.PAT }} # for example, a personal access token with `project` scope
