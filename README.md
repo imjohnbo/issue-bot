@@ -21,11 +21,11 @@ Issue Bot is a flexible GitHub action that takes care of a few issue related tas
 - Uses [Mustache templating syntax](https://github.com/janl/mustache.js) in `body`, along with a couple of handy template variables: `assignees` and `previousIssueNumber`
 - Closes most recent previous issue with all `labels` if `close-previous` is true
 - Adds new issue to `project` (user, organization, or repository project based on value of `project-type`), `column`, and `milestone`
+- Adds new issue to user or organization project at `project-v2-path`
 - Pins new issue and unpins previous issue if `pinned` is true
 - Makes issue comments linking new and previous issues if `linked-comments` is true
 - Assigns new issue only to the _next_ assignee in the list if `rotate-assignees` is true. Useful for duty rotation like first responder.
 - Pairs well with [imjohnbo/extract-issue-template-fields](https://github.com/imjohnbo/extract-issue-template-fields) if you'd prefer to open issues based on [issue templates](https://docs.github.com/en/github/building-a-strong-community/about-issue-and-pull-request-templates#issue-templates)
-- Adds new issue to user or organization project at `project-v2-path`
 
 ## v3 Migration
 ⚠️ If you're a `v2` user, please note that these breaking changes were introduced in `v3`: ⚠️
@@ -121,6 +121,54 @@ The linked comments (`linked-comments-new-issue-text`, `linked-comments-previous
 
 - `newIssueNumber`: The new issue number.
 
+## Authentication
+
+Issue Bot requires an API token, customizable with the [`token` input](https://github.com/imjohnbo/issue-bot/blob/46d9bc985d7f6952b5f439f929761b9c24ed0903/action.yml#L9), to authenticate with the GitHub API. The default `GITHUB_TOKEN` should work for all use cases except `project` and `project-v2-path`, when its [permissions](https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token) aren't sufficient. Please use a [GitHub App installation access token](https://docs.github.com/en/developers/apps/building-github-apps/authenticating-with-github-apps#authenticating-as-an-installation) of a GitHub App with `repository/project:read-write`/`organization/project:read-write` scope or [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with `project` scope in these cases. 
+
+GitHub Apps are in general [pretty cool](https://dev.to/github/building-github-apps-for-fun-and-profit-4mid) and offer some [nice advantages](https://docs.github.com/en/developers/apps/getting-started-with-apps/about-apps) over personal access tokens, so they're preferred when possible. 
+
+GitHub App installation access token:
+```yml
+# ...
+
+# Generate installation token for your GitHub App with...you guessed it, an action
+# See https://github.com/tibdex/github-app-token for setup
+- name: Generate token
+  id: generate_token
+  uses: tibdex/github-app-token@v1
+  with:
+    app_id: ${{ secrets.APP_ID }}
+    private_key: ${{ secrets.PRIVATE_KEY }}
+
+# New standup issue generated with a GitHub App!
+- name: New standup issue
+  uses: imjohnbo/issue-bot@v3
+  env:
+    TOKEN: ${{ steps.generate_token.outputs.token }} # installation access token as output of previous step
+  with:
+    title: Standup
+    body: |-
+      ... standup template ...
+    token: ${{ env.TOKEN }}
+
+# ...
+```
+
+Personal access token:
+```yml
+# ...
+
+# New standup issue generated with a personal access token
+- name: New standup issue
+  uses: imjohnbo/issue-bot@v3
+  with:
+    title: Standup
+    body: |-
+      ... standup template ...
+    token: ${{ env.PAT }}
+
+# ...
+```
 
 ## Projects support
 
