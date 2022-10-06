@@ -398,6 +398,7 @@ const run = async (inputs) => {
     core.info(`Running with inputs: ${JSON.stringify(inputs)}`);
 
     let previousAssignee; let previousIssueNumber = -1; let previousIssueNodeId; let previousAssignees;
+    let projectV2IssueItemId;
 
     if (needPreviousIssue(inputs.pinned, inputs.closePrevious, inputs.rotateAssignees, inputs.linkedComments)) {
       ({ previousIssueNumber, previousIssueNodeId, previousAssignees } = await getPreviousIssue(inputs.labels));
@@ -422,10 +423,11 @@ const run = async (inputs) => {
     }
 
     if (inputs.projectV2) {
-      await addIssueToProjectV2({
+      const response = await addIssueToProjectV2({
         issueNodeId: newIssueNodeId,
         url: inputs.projectV2
       });
+      projectV2IssueItemId = response.addProjectV2ItemById.item.id;
     }
 
     if (inputs.milestone) {
@@ -469,6 +471,11 @@ const run = async (inputs) => {
     if (previousIssueNumber) {
       core.info(`Previous issue number: ${previousIssueNumber}`);
       core.setOutput('previous-issue-number', String(previousIssueNumber));
+    }
+
+    if (projectV2IssueItemId) {
+      core.info(`Project V2 Issue Item Id: ${projectV2IssueItemId}`);
+      core.setOutput('project-v2-issue-item-id', projectV2IssueItemId);
     }
   } catch (error) {
     core.setFailed(`Error encountered: ${error}.`);
