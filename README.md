@@ -86,6 +86,7 @@ linked-comments-previous-issue-text:::optional-->action(Issue Bot Action):::acti
 rotate-assignees:::optional-->action(Issue Bot Action):::action
 action(Issue Bot Action)-->issue-number:::output
 action(Issue Bot Action)-->previous-issue-number:::output
+action(Issue Bot Action)-->project-v2-issue-item-id:::output
 classDef required fill:#6ba06a,stroke:#333,stroke-width:3px
 classDef optional fill:#d9b430,stroke:#333,stroke-width:3px
 classDef action fill:blue,stroke:#333,stroke-width:3px,color:#ffffff
@@ -107,6 +108,7 @@ click linked-comments-previous-issue-text "https://github.com/imjohnbo/issue-bot
 click rotate-assignees "https://github.com/imjohnbo/issue-bot/blob/main/action.yml#L96"
 click issue-number "https://github.com/imjohnbo/issue-bot/blob/main/action.yml#L104"
 click previous-issue-number "https://github.com/imjohnbo/issue-bot/blob/main/action.yml#L107"
+click project-v2-issue-item-id "https://github.com/imjohnbo/issue-bot/blob/main/action.yml#L117"
 ```
 <!-- END MERMAID -->
 
