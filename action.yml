@@ -117,5 +117,5 @@ outputs:
   project-v2-issue-item-id:
     description: 'The issue item id of the Projects v2, if available'
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
