@@ -26,7 +26,7 @@ jobs:
     
     - name: Commit file
       if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-      uses: imjohnbo/commit@178d297eaefad8461c6d8517e6a7e62ae0c9d45c # v1
+      uses: imjohnbo/commit@a17c853bd67779c78b30556432a8e8bcc2656b59 # v1
       with:
         files: |
           dist/index.js
