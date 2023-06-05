@@ -127,7 +127,8 @@ The linked comments (`linked-comments-new-issue-text`, `linked-comments-previous
 
 Issue Bot requires an API token, customizable with the [`token` input](https://github.com/imjohnbo/issue-bot/blob/46d9bc985d7f6952b5f439f929761b9c24ed0903/action.yml#L9), to authenticate with the GitHub API. The default `GITHUB_TOKEN` should work for all use cases except `project` and `project-v2-path`, when its [permissions](https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token) aren't sufficient. Please use a [GitHub App installation access token](https://docs.github.com/en/developers/apps/building-github-apps/authenticating-with-github-apps#authenticating-as-an-installation) of a GitHub App with `repository/project:read-write`/`organization/project:read-write` scope or [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with `project` scope in these cases. 
 
-GitHub Apps are in general [pretty cool](https://dev.to/github/building-github-apps-for-fun-and-profit-4mid) and offer some [nice advantages](https://docs.github.com/en/developers/apps/getting-started-with-apps/about-apps) over personal access tokens, so they're preferred when possible. 
+GitHub Apps are in general [pretty cool](https://dev.to/github/building-github-apps-for-fun-and-profit-4mid) and offer some [nice advantages](https://docs.github.com/en/developers/apps/getting-started-with-apps/about-apps) over personal access tokens, so they're preferred when possible.
+Github App access token will not work properly without [DeviceFlow](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps#device-flow) enabled.
 
 GitHub App installation access token:
 ```yml
